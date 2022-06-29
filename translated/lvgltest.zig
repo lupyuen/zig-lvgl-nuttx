@@ -5885,6 +5885,8 @@ pub fn lv_chart_set_range(arg_chart: ?*lv_obj_t, arg_ymin: lv_coord_t, arg_ymax:
 }
 pub extern fn fbdev_init(lv_drvr: ?*lv_disp_drv_t) c_int;
 pub extern fn lcddev_init(lv_drvr: ?*lv_disp_drv_t) c_int;
+pub extern fn get_disp_drv() ?*lv_disp_drv_t;
+pub extern fn get_disp_buf() ?*lv_disp_buf_t;
 pub extern fn tp_init() c_int;
 pub extern fn tp_read(indev_drv: [*c]struct__lv_indev_drv_t, data: [*c]lv_indev_data_t) bool;
 pub extern fn tp_set_cal_values(ul: [*c]lv_point_t, ur: [*c]lv_point_t, lr: [*c]lv_point_t, ll: [*c]lv_point_t) void;
@@ -5897,11 +5899,49 @@ pub fn monitor_cb(arg_disp_drv: ?*lv_disp_drv_t, arg_time_1: u32, arg_px: u32) c
     var px = arg_px;
     _ = px;
 }
-pub var buffer1: [4800]lv_color_t = @import("std").mem.zeroes([4800]lv_color_t); // /home/user/nuttx/apps/graphics/lvgl/lvgl/src/lv_core/../lv_draw/../lv_misc/lv_color.h:608:48: warning: cannot initialize opaque type
-// lvgltest.c:129:13: warning: unable to translate function, demoted to extern
-pub extern fn create_widgets() callconv(.C) void; // lvgltest.c:227:17: warning: local variable has opaque type
-// (no file):353:14: warning: unable to translate function, demoted to extern
-pub extern fn lvgltest_main(arg_argc: c_int, arg_argv: [*c][*c]u8) c_int;
+pub var buffer1: [4800]lv_color_t = @import("std").mem.zeroes([4800]lv_color_t);
+pub fn create_widgets() callconv(.C) void {
+    var screen: ?*lv_obj_t = lv_scr_act();
+    var label: ?*lv_obj_t = lv_label_create(screen, null);
+    lv_label_set_long_mode(label, @bitCast(lv_label_long_mode_t, @truncate(i8, LV_LABEL_LONG_BREAK)));
+    lv_label_set_recolor(label, @as(c_int, 1) != 0);
+    lv_label_set_align(label, @bitCast(lv_label_align_t, @truncate(i8, LV_LABEL_ALIGN_CENTER)));
+    lv_label_set_text(label, "#ff0000 HELLO# #00aa00 PINEDIO# #0000ff STACK!# ");
+    lv_obj_set_width(label, @bitCast(lv_coord_t, @truncate(c_short, @as(c_int, 200))));
+    lv_obj_align(label, null, @bitCast(lv_align_t, @truncate(i8, LV_ALIGN_CENTER)), @bitCast(lv_coord_t, @truncate(c_short, @as(c_int, 0))), @bitCast(lv_coord_t, @truncate(c_short, -@as(c_int, 30))));
+}
+pub export fn lvgltest_main(arg_argc: c_int, arg_argv: [*c][*c]u8) c_int {
+    var argc = arg_argc;
+    _ = argc;
+    var argv = arg_argv;
+    _ = argv;
+    var disp_drv: ?*lv_disp_drv_t = get_disp_drv();
+    var disp_buf: ?*lv_disp_buf_t = get_disp_buf();
+    lv_init();
+    lv_disp_buf_init(disp_buf, @ptrCast(?*anyopaque, @ptrCast(?*lv_color_t, @alignCast(@import("std").meta.alignment(lv_color_t), &buffer1))), @intToPtr(?*anyopaque, @as(c_int, 0)), @bitCast(u32, @as(c_int, 240) * @as(c_int, 20)));
+    lv_disp_drv_init(disp_drv);
+    disp_drv.*.buffer = disp_buf;
+    disp_drv.*.monitor_cb = monitor_cb;
+    if (lcddev_init(disp_drv) != @as(c_int, 0)) {
+        if (fbdev_init(disp_drv) != @as(c_int, 0)) {
+            return 1;
+        }
+    }
+    _ = lv_disp_drv_register(disp_drv);
+    _ = tp_init();
+    var indev_drv: lv_indev_drv_t = undefined;
+    lv_indev_drv_init(&indev_drv);
+    indev_drv.type = @bitCast(lv_indev_type_t, @truncate(i8, LV_INDEV_TYPE_POINTER));
+    indev_drv.read_cb = tp_read;
+    _ = lv_indev_drv_register(&indev_drv);
+    create_widgets();
+    tp_cal_create();
+    while (true) {
+        _ = lv_task_handler();
+        _ = usleep(@bitCast(useconds_t, @as(c_int, 10000)));
+    }
+    return 0;
+}
 pub const __INTMAX_C_SUFFIX__ = @compileError("unable to translate macro: undefined identifier `LL`"); // (no file):67:9
 pub const __UINTMAX_C_SUFFIX__ = @compileError("unable to translate macro: undefined identifier `ULL`"); // (no file):73:9
 pub const __FLT16_DENORM_MIN__ = @compileError("unable to translate C expr: unexpected token 'IntegerLiteral'"); // (no file):104:9
