@@ -2,7 +2,7 @@
 
 TODO
 
-NuttX compiles the LVGL Test App with this command...
+NuttX compiles the LVGL Test App with this GCC command...
 
 ```bash
 ##  App Source Directory
@@ -124,3 +124,38 @@ Here's the original C code: [lvgltest_main.c](https://github.com/lupyuen/lvgltes
 
 And the auto-translation from C to Zig: [translated/lvgltest.zig](translated/lvgltest.zig)
 
+# Zig Auto-Translation is Incomplete
+
+The Auto-Translation from C to Zig is missing 2 key functions: `lvgltest_main()` and `create_widgets()`...
+
+```zig
+// lvgltest.c:129:13: warning: unable to translate function, demoted to extern
+pub extern fn create_widgets() callconv(.C) void;
+// lvgltest.c:227:17: warning: local variable has opaque type
+
+// (no file):353:14: warning: unable to translate function, demoted to extern
+pub extern fn lvgltest_main(arg_argc: c_int, arg_argv: [*c][*c]u8) c_int;
+```
+
+[(Source)](https://github.com/lupyuen/zig-lvgl-nuttx/blob/main/translated/lvgltest.zig#L5901-L5904)
+
+When we lookup `lvgltest.c` line 227...
+
+```c
+int lvgltest_main(int argc, FAR char *argv[])
+{
+  // lvgltest.c:227:17: warning: local variable has opaque type
+  lv_disp_drv_t disp_drv;
+  lv_disp_buf_t disp_buf;
+  ...
+```
+
+[(Source)](https://github.com/lupyuen/lvgltest-nuttx/blob/main/lvgltest.c#L225-L228)
+
+We see that Zig couldn't translate the type `lv_disp_drv_t` because it's opaque.
+
+Let's find out why.
+
+# Opaque Type
+
+TODO
