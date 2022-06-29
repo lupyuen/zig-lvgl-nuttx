@@ -137,7 +137,7 @@ pub extern fn create_widgets() callconv(.C) void;
 pub extern fn lvgltest_main(arg_argc: c_int, arg_argv: [*c][*c]u8) c_int;
 ```
 
-[(Source)](https://github.com/lupyuen/zig-lvgl-nuttx/blob/main/translated/lvgltest.zig#L5901-L5904)
+[(Source)](https://github.com/lupyuen/zig-lvgl-nuttx/blob/9e95d800f3a429c5f35970ca35cd43bd8fbd9529/translated/lvgltest.zig#L5901-L5904)
 
 When we look up `lvgltest.c` line 227...
 
@@ -150,7 +150,7 @@ int lvgltest_main(int argc, FAR char *argv[])
   ...
 ```
 
-[(Source)](https://github.com/lupyuen/lvgltest-nuttx/blob/main/lvgltest.c#L225-L228)
+[(Source)](https://github.com/lupyuen/lvgltest-nuttx/blob/1e8b0501c800209f0fa3f35f54b3742498d0e302/lvgltest.c#L225-L228)
 
 We see that Zig couldn't translate the type `lv_disp_drv_t` because it's opaque.
 
@@ -174,7 +174,7 @@ pub const struct__disp_t = opaque {};
 pub const lv_disp_buf_t = opaque {};
 ```
 
-[(Source)](https://github.com/lupyuen/zig-lvgl-nuttx/blob/main/translated/lvgltest.zig#L700-L704)
+[(Source)](https://github.com/lupyuen/zig-lvgl-nuttx/blob/9e95d800f3a429c5f35970ca35cd43bd8fbd9529/translated/lvgltest.zig#L700-L704)
 
 Here are the C definitions of `lv_disp_drv_t`, `lv_disp_t` and `lv_disp_buf_t`...
 
