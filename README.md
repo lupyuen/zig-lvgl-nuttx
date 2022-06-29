@@ -93,6 +93,33 @@ zig translate-c \
   >lvgltest.zig
 ```
 
+To fix the translation we need to insert this...
+
+```c
+#if defined(__NuttX__) && defined(__clang__)  //  Workaround for NuttX with zig cc
+#include <arch/types.h>
+#include "../../nuttx/include/limits.h"
+#define FAR
+#endif  //  defined(__NuttX__) && defined(__clang__)
+```
+
+[(Source)](https://github.com/lupyuen/lvgltest-nuttx/blob/main/lvgltest.c#L25-L29)
+
+And change this...
+
+```c
+static void monitor_cb(lv_disp_drv_t * disp_drv, uint32_t time, uint32_t px)
+{
+#ifndef __clang__  //  Doesn't compile with zig cc
+  ginfo("%" PRIu32 " px refreshed in %" PRIu32 " ms\n", px, time);
+#endif  //  __clang__
+}
+```
+
+[(Source)](https://github.com/lupyuen/lvgltest-nuttx/blob/main/lvgltest.c#L95-L100)
+
+[(See the changes)](https://github.com/lupyuen/lvgltest-nuttx/commit/1e8b0501c800209f0fa3f35f54b3742498d0e302)
+
 Here's the original C code: [lvgltest_main.c](https://github.com/lupyuen/lvgltest-nuttx/blob/main/lvgltest.c)
 
 And the auto-translation from C to Zig: [translated/lvgltest.zig](translated/lvgltest.zig)
