@@ -355,3 +355,89 @@ Let's fix the Opaque Types.
 # Fix Opaque Types
 
 TODO
+
+```c
+/****************************************************************************
+ * Name: get_disp_drv
+ *
+ * Description:
+ *   Return the static instance of Display Driver, because Zig can't
+ *   allocate structs wth bitfields inside.
+ *
+ ****************************************************************************/
+
+lv_disp_drv_t *get_disp_drv(void)
+{
+  static lv_disp_drv_t disp_drv;
+  return &disp_drv;
+}
+
+/****************************************************************************
+ * Name: get_disp_buf
+ *
+ * Description:
+ *   Return the static instance of Display Buffer, because Zig can't
+ *   allocate structs wth bitfields inside.
+ *
+ ****************************************************************************/
+
+lv_disp_buf_t *get_disp_buf(void)
+{
+  static lv_disp_buf_t disp_buf;
+  return &disp_buf;
+}
+```
+
+[(Source)](https://github.com/lupyuen/lvgltest-nuttx/blob/main/lcddev.c#L317-L345)
+
+```c
+int main(int argc, FAR char *argv[])
+{
+  lv_disp_drv_t *disp_drv = get_disp_drv();
+  lv_disp_buf_t *disp_buf = get_disp_buf();
+  ...
+```
+
+[(Source)](https://github.com/lupyuen/lvgltest-nuttx/blob/main/lvgltest.c#L225-L228)
+
+# Color Type
+
+TODO
+
+```c
+//  LVGL Canvas Demo doesn't work with zig cc because of `lv_color_t`
+#if defined(CONFIG_USE_LV_CANVAS) && !defined(__clang__)  
+
+  //  Set the Canvas Buffer (Warning: Might take a lot of RAM!)
+  static lv_color_t cbuf[LV_CANVAS_BUF_SIZE_TRUE_COLOR(CANVAS_WIDTH, CANVAS_HEIGHT)];
+  ...
+```
+
+[(Source)](https://github.com/lupyuen/lvgltest-nuttx/blob/main/lvgltest.c#L160-L165)
+
+```zig
+pub const lv_color_t = lv_color16_t;
+
+pub const lv_color16_t = extern union {
+    ch: struct_unnamed_7,
+    full: u16,
+};
+
+// nuttx/apps/graphics/lvgl/lvgl/src/lv_core/../lv_draw/../lv_misc/lv_color.h:240:18:
+// warning: struct demoted to opaque type - has bitfield
+const struct_unnamed_7 = opaque {};
+```
+
+[(Source)](https://github.com/lupyuen/zig-lvgl-nuttx/blob/main/translated/lvgltest.zig#L520-L537)
+
+```c
+typedef union {
+    struct {
+        uint16_t blue : 5;
+        uint16_t green : 6;
+        uint16_t red : 5;
+    } ch;
+    uint16_t full;
+} lv_color16_t;
+```
+
