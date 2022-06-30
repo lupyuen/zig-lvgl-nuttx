@@ -268,9 +268,11 @@ int lvgltest_main(int argc, FAR char *argv[])
 
 [(Source)](https://github.com/lupyuen/lvgltest-nuttx/blob/main/lvgltest.c#L225-L228)
 
-After this modification, our Auto-Translation from C to Zig now contains the 2 missing functions: `lvgltest_main()` and `create_widgets()`
+After this modification, our Auto-Translation from C to Zig now contains the 2 missing functions...
 
--   [translated/lvgltest.zig](translated/lvgltest.zig)
+-   [`lvgltest_main()`](https://github.com/lupyuen/zig-lvgl-nuttx/blob/main/translated/lvgltest.zig#L5913-L5944)
+
+-   [`create_widgets()`](https://github.com/lupyuen/zig-lvgl-nuttx/blob/main/translated/lvgltest.zig#L5903-L5912)
 
 # Color Type
 
