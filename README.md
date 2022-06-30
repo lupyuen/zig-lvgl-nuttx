@@ -186,166 +186,26 @@ pub const lv_disp_buf_t = opaque {};
 
 [(Source)](https://github.com/lupyuen/zig-lvgl-nuttx/blob/9e95d800f3a429c5f35970ca35cd43bd8fbd9529/translated/lvgltest.zig#L700-L704)
 
-Here are the C definitions of `lv_disp_drv_t`, `lv_disp_t` and `lv_disp_buf_t`...
+Below are the C definitions of `lv_disp_drv_t`, `lv_disp_t` and `lv_disp_buf_t`.
 
-```c
-/**
- * Display Driver structure to be registered by HAL
- */
-typedef struct _disp_drv_t {
-
-    lv_coord_t hor_res; /**< Horizontal resolution. */
-    lv_coord_t ver_res; /**< Vertical resolution. */
-
-    /** Pointer to a buffer initialized with `lv_disp_buf_init()`.
-     * LVGL will use this buffer(s) to draw the screens contents */
-    lv_disp_buf_t * buffer;
-
-#if LV_ANTIALIAS
-    uint32_t antialiasing : 1; /**< 1: antialiasing is enabled on this display. */
-#endif
-    uint32_t rotated : 1; /**< 1: turn the display by 90 degree. @warning Does not update coordinates for you!*/
-
-#if LV_COLOR_SCREEN_TRANSP
-    /**Handle if the the screen doesn't have a solid (opa == LV_OPA_COVER) background.
-     * Use only if required because it's slower.*/
-    uint32_t screen_transp : 1;
-#endif
-
-    /** DPI (dot per inch) of the display.
-     * Set to `LV_DPI` from `lv_Conf.h` by default.
-     */
-    uint32_t dpi : 10;
-
-    /** MANDATORY: Write the internal buffer (VDB) to the display. 'lv_disp_flush_ready()' has to be
-     * called when finished */
-    void (*flush_cb)(struct _disp_drv_t * disp_drv, const lv_area_t * area, lv_color_t * color_p);
-
-    /** OPTIONAL: Extend the invalidated areas to match with the display drivers requirements
-     * E.g. round `y` to, 8, 16 ..) on a monochrome display*/
-    void (*rounder_cb)(struct _disp_drv_t * disp_drv, lv_area_t * area);
-
-    /** OPTIONAL: Set a pixel in a buffer according to the special requirements of the display
-     * Can be used for color format not supported in LittelvGL. E.g. 2 bit -> 4 gray scales
-     * @note Much slower then drawing with supported color formats. */
-    void (*set_px_cb)(struct _disp_drv_t * disp_drv, uint8_t * buf, lv_coord_t buf_w, lv_coord_t x, lv_coord_t y,
-                      lv_color_t color, lv_opa_t opa);
-
-    /** OPTIONAL: Called after every refresh cycle to tell the rendering and flushing time + the
-     * number of flushed pixels */
-    void (*monitor_cb)(struct _disp_drv_t * disp_drv, uint32_t time, uint32_t px);
-
-    /** OPTIONAL: Called periodically while lvgl waits for operation to be completed.
-     * For example flushing or GPU
-     * User can execute very simple tasks here or yield the task */
-    void (*wait_cb)(struct _disp_drv_t * disp_drv);
-
-#if LV_USE_GPU
-    /** OPTIONAL: Blend two memories using opacity (GPU only)*/
-    void (*gpu_blend_cb)(struct _disp_drv_t * disp_drv, lv_color_t * dest, const lv_color_t * src, uint32_t length,
-                         lv_opa_t opa);
-
-    /** OPTIONAL: Fill a memory with a color (GPU only)*/
-    void (*gpu_fill_cb)(struct _disp_drv_t * disp_drv, lv_color_t * dest_buf, lv_coord_t dest_width,
-                        const lv_area_t * fill_area, lv_color_t color);
-#endif
-
-    /** On CHROMA_KEYED images this color will be transparent.
-     * `LV_COLOR_TRANSP` by default. (lv_conf.h)*/
-    lv_color_t color_chroma_key;
-
-#if LV_USE_USER_DATA
-    lv_disp_drv_user_data_t user_data; /**< Custom display driver user data */
-#endif
-
-} lv_disp_drv_t;
-
-/**
- * Display structure.
- * @note `lv_disp_drv_t` should be the first member of the structure.
- */
-typedef struct _disp_t {
-    /**< Driver to the display*/
-    lv_disp_drv_t driver;
-
-    /**< A task which periodically checks the dirty areas and refreshes them*/
-    lv_task_t * refr_task;
-
-    /** Screens of the display*/
-    lv_ll_t scr_ll;
-    struct _lv_obj_t * act_scr;   /**< Currently active screen on this display */
-    struct _lv_obj_t * prev_scr;  /**< Previous screen. Used during screen animations */
-    struct _lv_obj_t * top_layer; /**< @see lv_disp_get_layer_top */
-    struct _lv_obj_t * sys_layer; /**< @see lv_disp_get_layer_sys */
-
-uint8_t del_prev  :
-    1;        /**< 1: Automatically delete the previous screen when the screen load animation is ready */
-
-    lv_color_t bg_color;          /**< Default display color when screens are transparent*/
-    const void * bg_img;       /**< An image source to display as wallpaper*/
-    lv_opa_t bg_opa;              /**<Opacity of the background color or wallpaper */
-
-    /** Invalidated (marked to redraw) areas*/
-    lv_area_t inv_areas[LV_INV_BUF_SIZE];
-    uint8_t inv_area_joined[LV_INV_BUF_SIZE];
-    uint32_t inv_p : 10;
-
-    /*Miscellaneous data*/
-    uint32_t last_activity_time; /**< Last time there was activity on this display */
-} lv_disp_t;
-
-/**
- * Structure for holding display buffer information.
- */
-typedef struct {
-    void * buf1; /**< First display buffer. */
-    void * buf2; /**< Second display buffer. */
-
-    /*Internal, used by the library*/
-    void * buf_act;
-    uint32_t size; /*In pixel count*/
-    lv_area_t area;
-    /*1: flushing is in progress. (It can't be a bit field because when it's cleared from IRQ Read-Modify-Write issue might occur)*/
-    volatile int flushing;
-    /*1: It was the last chunk to flush. (It can't be a bi tfield because when it's cleared from IRQ Read-Modify-Write issue might occur)*/
-    volatile int flushing_last;
-    volatile uint32_t last_area         : 1; /*1: the last area is being rendered*/
-    volatile uint32_t last_part         : 1; /*1: the last part of the current area is being rendered*/
-} lv_disp_buf_t;
-```
-
-The above structs couldn't be translated to Zig because they contain Bit Fields...
+The structs couldn't be translated to Zig because they contain Bit Fields...
 
 ```c
 typedef struct _disp_drv_t {
-#if LV_ANTIALIAS
-    uint32_t antialiasing : 1; /**< 1: antialiasing is enabled on this display. */
-#endif
-    uint32_t rotated : 1; /**< 1: turn the display by 90 degree. @warning Does not update coordinates for you!*/
-
-#if LV_COLOR_SCREEN_TRANSP
-    /**Handle if the the screen doesn't have a solid (opa == LV_OPA_COVER) background.
-     * Use only if required because it's slower.*/
-    uint32_t screen_transp : 1;
-#endif
-
-    /** DPI (dot per inch) of the display.
-     * Set to `LV_DPI` from `lv_Conf.h` by default.
-     */
+    uint32_t rotated : 1;
     uint32_t dpi : 10;
     ...
 } lv_disp_drv_t;
 
 typedef struct _disp_t {
-uint8_t del_prev  :
-    1;        /**< 1: Automatically delete the previous screen when the screen load animation is ready */
+    uint8_t del_prev  : 1;
     uint32_t inv_p : 10;
     ...
 } lv_disp_t;
 
 typedef struct {
-    volatile uint32_t last_area         : 1; /*1: the last area is being rendered*/
-    volatile uint32_t last_part         : 1; /*1: the last part of the current area is being rendered*/
+    volatile uint32_t last_area : 1;
+    volatile uint32_t last_part : 1;
     ...
 } lv_disp_buf_t;
 ```
@@ -354,7 +214,13 @@ Let's fix the Opaque Types.
 
 # Fix Opaque Types
 
-TODO
+Earlier we saw that Zig couldn't translate and import these structs because they contain Bit Fields...
+
+-   `lv_disp_drv_t` (Display Driver)
+
+-   `lv_disp_buf_t` (Display Buffer)
+
+Instead of creating instances of these structs in Zig, we do it in C instead...
 
 ```c
 /****************************************************************************
@@ -390,8 +256,10 @@ lv_disp_buf_t *get_disp_buf(void)
 
 [(Source)](https://github.com/lupyuen/lvgltest-nuttx/blob/main/lcddev.c#L317-L345)
 
+Then we fetch the pointers to these structs in our Main Function...
+
 ```c
-int main(int argc, FAR char *argv[])
+int lvgltest_main(int argc, FAR char *argv[])
 {
   lv_disp_drv_t *disp_drv = get_disp_drv();
   lv_disp_buf_t *disp_buf = get_disp_buf();
@@ -400,9 +268,13 @@ int main(int argc, FAR char *argv[])
 
 [(Source)](https://github.com/lupyuen/lvgltest-nuttx/blob/main/lvgltest.c#L225-L228)
 
+After this modification, our Auto-Translation from C to Zig now contains the 2 missing functions: `lvgltest_main()` and `create_widgets()`
+
+-   [translated/lvgltest.zig](translated/lvgltest.zig)
+
 # Color Type
 
-TODO
+We also commented out all references to `lv_color_t`...
 
 ```c
 //  LVGL Canvas Demo doesn't work with zig cc because of `lv_color_t`
@@ -414,6 +286,8 @@ TODO
 ```
 
 [(Source)](https://github.com/lupyuen/lvgltest-nuttx/blob/main/lvgltest.c#L160-L165)
+
+That's because `lv_color_t` is also an Opaque Type...
 
 ```zig
 pub const lv_color_t = lv_color16_t;
@@ -430,9 +304,12 @@ const struct_unnamed_7 = opaque {};
 
 [(Source)](https://github.com/lupyuen/zig-lvgl-nuttx/blob/main/translated/lvgltest.zig#L520-L537)
 
+That contains Bit Fields...
+
 ```c
 typedef union {
     struct {
+        // Bit fields for lv_color16_t (aliased to lv_color_t)
         uint16_t blue : 5;
         uint16_t green : 6;
         uint16_t red : 5;
@@ -441,3 +318,6 @@ typedef union {
 } lv_color16_t;
 ```
 
+# TODO
+
+TODO: Code the Main Function in Zig
