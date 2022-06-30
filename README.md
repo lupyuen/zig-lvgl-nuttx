@@ -1,10 +1,14 @@
+![LVGL Test App in C](https://lupyuen.github.io/images/pinedio2-title.jpg)
+
 # Zig LVGL App on Apache NuttX RTOS
 
-Can we use Zig to clean up an LVGL Touchscreen App for Apache NuttX RTOS? Let's find out!
+Can we use Zig to clean up an LVGL Touchscreen App for Apache NuttX RTOS?
+
+Let's find out!
 
 # LVGL Test App in C
 
-Here's our LVGL Test App in C: [lvgltest_main.c](https://github.com/lupyuen/lvgltest-nuttx/blob/main/lvgltest.c) 
+Here's our LVGL Test App in C (pic above): [lvgltest_main.c](https://github.com/lupyuen/lvgltest-nuttx/blob/main/lvgltest.c) 
 
 NuttX compiles the LVGL Test App with this GCC command...
 
