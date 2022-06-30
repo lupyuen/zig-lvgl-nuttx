@@ -1,6 +1,6 @@
 ![LVGL Test App in C](https://lupyuen.github.io/images/pinedio2-title.jpg)
 
-# Zig LVGL App on Apache NuttX RTOS
+# Zig LVGL Touchscreen App on Apache NuttX RTOS
 
 Can we use Zig to clean up an LVGL Touchscreen App for Apache NuttX RTOS?
 
