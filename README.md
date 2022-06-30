@@ -1,6 +1,6 @@
 # Zig LVGL App on Apache NuttX RTOS
 
-Can we use Zig to clean up an LVGL Touchscreen App? Let's find out!
+Can we use Zig to clean up an LVGL Touchscreen App for Apache NuttX RTOS? Let's find out!
 
 # LVGL Test App in C
 
