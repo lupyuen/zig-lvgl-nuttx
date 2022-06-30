@@ -323,3 +323,38 @@ typedef union {
 # TODO
 
 TODO: Code the Main Function in Zig
+
+To compile our LVGL Zig App...
+
+```bash
+##  Download our LVGL Zig App for NuttX
+git clone --recursive https://github.com/lupyuen/zig-lvgl-nuttx
+cd zig-lvgl-nuttx
+
+##  Compile the Zig App for BL602 (RV32IMACF with Hardware Floating-Point)
+zig build-obj \
+  --verbose-cimport \
+  -target riscv32-freestanding-none \
+  -mcpu=baseline_rv32-d \
+  -isystem "$HOME/nuttx/nuttx/include" \
+  -I "$HOME/nuttx/apps/graphics/lvgl" \
+  -I "$HOME/nuttx/apps/graphics/lvgl/lvgl" \
+  -I "$HOME/nuttx/apps/include" \
+  -I "$HOME/nuttx/apps/examples/lvgltest" \
+  lvgltest.zig
+
+##  Patch the ELF Header of `lvgltest.o` from Soft-Float ABI to Hard-Float ABI
+xxd -c 1 lvgltest.o \
+  | sed 's/00000024: 01/00000024: 03/' \
+  | xxd -r -c 1 - lvgltest2.o
+cp lvgltest2.o lvgltest.o
+
+##  Copy the compiled app to NuttX and overwrite `lvgltest.o`
+##  TODO: Change "$HOME/nuttx" to your NuttX Project Directory
+cp lvgltest.o $HOME/nuttx/apps/examples/lvgltest/*lvgltest.o
+
+##  Build NuttX to link the Zig Object from `lvgltest.o`
+##  TODO: Change "$HOME/nuttx" to your NuttX Project Directory
+cd $HOME/nuttx/nuttx
+make
+```
