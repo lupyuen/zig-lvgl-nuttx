@@ -47,6 +47,8 @@ riscv64-unknown-elf-gcc \
 
 (Observed from `make --trace`)
 
+Let's convert the LVGL Test App from C to Zig...
+
 # Auto-Translate LVGL App to Zig
 
 The Zig Compiler can auto-translate C code to Zig. [(See this)](https://ziglang.org/documentation/master/#C-Translation-CLI)
@@ -346,4 +348,6 @@ typedef struct {
 
 Let's fix the Opaque Types.
 
-# TODO
+# Fix Opaque Types
+
+TODO
