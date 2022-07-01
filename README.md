@@ -351,7 +351,7 @@ cp lvgltest2.o lvgltest.o
 
 ##  Copy the compiled app to NuttX and overwrite `lvgltest.o`
 ##  TODO: Change "$HOME/nuttx" to your NuttX Project Directory
-cp lvgltest.o $HOME/nuttx/apps/examples/lvgltest/*lvgltest.o
+cp lvgltest.o $HOME/nuttx/apps/examples/lvgltest/lvgltest*.o
 
 ##  Build NuttX to link the Zig Object from `lvgltest.o`
 ##  TODO: Change "$HOME/nuttx" to your NuttX Project Directory
