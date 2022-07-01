@@ -5887,6 +5887,8 @@ pub extern fn fbdev_init(lv_drvr: ?*lv_disp_drv_t) c_int;
 pub extern fn lcddev_init(lv_drvr: ?*lv_disp_drv_t) c_int;
 pub extern fn get_disp_drv() ?*lv_disp_drv_t;
 pub extern fn get_disp_buf() ?*lv_disp_buf_t;
+pub extern fn init_disp_drv(disp_drv: ?*lv_disp_drv_t, disp_buf: ?*lv_disp_buf_t, monitor_cb: ?fn (?*struct__disp_drv_t, u32, u32) callconv(.C) void) void;
+pub extern fn init_disp_buf(disp_buf: ?*lv_disp_buf_t) void;
 pub extern fn tp_init() c_int;
 pub extern fn tp_read(indev_drv: [*c]struct__lv_indev_drv_t, data: [*c]lv_indev_data_t) bool;
 pub extern fn tp_set_cal_values(ul: [*c]lv_point_t, ur: [*c]lv_point_t, lr: [*c]lv_point_t, ll: [*c]lv_point_t) void;
@@ -5899,7 +5901,6 @@ pub fn monitor_cb(arg_disp_drv: ?*lv_disp_drv_t, arg_time_1: u32, arg_px: u32) c
     var px = arg_px;
     _ = px;
 }
-pub var buffer1: [4800]lv_color_t = @import("std").mem.zeroes([4800]lv_color_t);
 pub fn create_widgets() callconv(.C) void {
     var screen: ?*lv_obj_t = lv_scr_act();
     var label: ?*lv_obj_t = lv_label_create(screen, null);
@@ -5918,10 +5919,8 @@ pub export fn lvgltest_main(arg_argc: c_int, arg_argv: [*c][*c]u8) c_int {
     var disp_drv: ?*lv_disp_drv_t = get_disp_drv();
     var disp_buf: ?*lv_disp_buf_t = get_disp_buf();
     lv_init();
-    lv_disp_buf_init(disp_buf, @ptrCast(?*anyopaque, @ptrCast(?*lv_color_t, @alignCast(@import("std").meta.alignment(lv_color_t), &buffer1))), @intToPtr(?*anyopaque, @as(c_int, 0)), @bitCast(u32, @as(c_int, 240) * @as(c_int, 20)));
-    lv_disp_drv_init(disp_drv);
-    disp_drv.*.buffer = disp_buf;
-    disp_drv.*.monitor_cb = monitor_cb;
+    init_disp_buf(disp_buf);
+    init_disp_drv(disp_drv, disp_buf, monitor_cb);
     if (lcddev_init(disp_drv) != @as(c_int, 0)) {
         if (fbdev_init(disp_drv) != @as(c_int, 0)) {
             return 1;
@@ -10206,10 +10205,8 @@ pub const __APPS_EXAMPLES_LVGLTEST_FBDEV_H = "";
 pub const __APPS_EXAMPLES_LVGLTEST_LCDDEV_H = "";
 pub const __APPS_EXAMPLES_LVGLTEST_TP_H = "";
 pub const __APPS_EXAMPLES_LVGLTEST_TP_CAL_H = "";
-pub const DISPLAY_BUFFER_SIZE = CONFIG_LV_HOR_RES * CONFIG_EXAMPLES_LVGLTEST_BUFF_SIZE;
 pub const CANVAS_WIDTH = @as(c_int, 50);
 pub const CANVAS_HEIGHT = @as(c_int, 50);
-pub const buffer2 = NULL;
 pub const winsize = struct_winsize;
 pub const serial_rs485 = struct_serial_rs485;
 pub const symtab_s = struct_symtab_s;
