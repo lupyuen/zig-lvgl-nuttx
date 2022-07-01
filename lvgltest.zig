@@ -58,11 +58,11 @@ pub export fn lvgltest_main(
     }
     _ = c.lv_disp_drv_register(disp_drv);
     _ = c.tp_init();
-    var indev_drv: c.lv_indev_drv_t = undefined;
-    c.lv_indev_drv_init(&indev_drv);
-    indev_drv.type = @bitCast(c.lv_indev_type_t, @truncate(i8, c.LV_INDEV_TYPE_POINTER));
-    indev_drv.read_cb = c.tp_read;
-    _ = c.lv_indev_drv_register(&indev_drv);
+    // var indev_drv: c.lv_indev_drv_t = undefined;
+    // c.lv_indev_drv_init(&indev_drv);
+    // indev_drv.type = @bitCast(c.lv_indev_type_t, @truncate(i8, c.LV_INDEV_TYPE_POINTER));
+    // indev_drv.read_cb = c.tp_read;
+    // _ = c.lv_indev_drv_register(&indev_drv);
     create_widgets();
     c.tp_cal_create();
     while (true) {
