@@ -5892,6 +5892,8 @@ pub extern fn init_disp_buf(disp_buf: ?*lv_disp_buf_t) void;
 pub extern fn tp_init() c_int;
 pub extern fn tp_read(indev_drv: [*c]struct__lv_indev_drv_t, data: [*c]lv_indev_data_t) bool;
 pub extern fn tp_set_cal_values(ul: [*c]lv_point_t, ur: [*c]lv_point_t, lr: [*c]lv_point_t, ll: [*c]lv_point_t) void;
+pub extern fn get_indev_drv() [*c]lv_indev_drv_t;
+pub extern fn init_indev_drv(indev_drv: [*c]lv_indev_drv_t, read_cb: ?fn ([*c]struct__lv_indev_drv_t, [*c]lv_indev_data_t) callconv(.C) bool) void;
 pub extern fn tp_cal_create() void;
 pub fn monitor_cb(arg_disp_drv: ?*lv_disp_drv_t, arg_time_1: u32, arg_px: u32) callconv(.C) void {
     var disp_drv = arg_disp_drv;
@@ -5928,11 +5930,8 @@ pub export fn lvgltest_main(arg_argc: c_int, arg_argv: [*c][*c]u8) c_int {
     }
     _ = lv_disp_drv_register(disp_drv);
     _ = tp_init();
-    var indev_drv: lv_indev_drv_t = undefined;
-    lv_indev_drv_init(&indev_drv);
-    indev_drv.type = @bitCast(lv_indev_type_t, @truncate(i8, LV_INDEV_TYPE_POINTER));
-    indev_drv.read_cb = tp_read;
-    _ = lv_indev_drv_register(&indev_drv);
+    var indev_drv: [*c]lv_indev_drv_t = get_indev_drv();
+    init_indev_drv(indev_drv, tp_read);
     create_widgets();
     tp_cal_create();
     while (true) {
