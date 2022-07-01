@@ -49,10 +49,8 @@ pub export fn lvgltest_main(
     var disp_drv: ?*c.lv_disp_drv_t = c.get_disp_drv();
     var disp_buf: ?*c.lv_disp_buf_t = c.get_disp_buf();
     c.lv_init();
-    ////c.lv_disp_buf_init(disp_buf, @ptrCast(?*anyopaque, @ptrCast(?*c.lv_color_t, @alignCast(@import("std").meta.alignment(c.lv_color_t), &buffer1))), @intToPtr(?*anyopaque, @as(c_int, 0)), @bitCast(u32, @as(c_int, 240) * @as(c_int, 20)));
-    c.lv_disp_drv_init(disp_drv);
-    disp_drv.*.buffer = disp_buf;
-    disp_drv.*.monitor_cb = monitor_cb;
+    c.init_disp_buf(disp_buf);
+    c.init_disp_drv(disp_drv, disp_buf, monitor_cb);
     if (c.lcddev_init(disp_drv) != @as(c_int, 0)) {
         if (c.fbdev_init(disp_drv) != @as(c_int, 0)) {
             return 1;
@@ -93,5 +91,3 @@ pub fn monitor_cb(arg_disp_drv: ?*c.lv_disp_drv_t, arg_time_1: u32, arg_px: u32)
     var px = arg_px;
     _ = px;
 }
-
-////pub var buffer1: [4800]c.lv_color_t = @import("std").mem.zeroes([4800]c.lv_color_t);
