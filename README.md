@@ -358,3 +358,7 @@ cp lvgltest.o $HOME/nuttx/apps/examples/lvgltest/lvgltest*.o
 cd $HOME/nuttx/nuttx
 make
 ```
+
+This works OK!
+
+https://github.com/lupyuen/zig-lvgl-nuttx/blob/ec4d58e84140cbf2b8fd6a80b65c06f6da97edfc/lvgltest.zig
