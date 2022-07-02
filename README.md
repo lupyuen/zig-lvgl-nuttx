@@ -782,6 +782,8 @@ pub export fn create_widgets() void {
 
 [(Source)](https://github.com/lupyuen/zig-lvgl-nuttx/blob/main/lvgltest.zig#L92-L124)
 
+The Zig Functions look very similar to C: [lvgltest.c](https://github.com/lupyuen/lvgltest-nuttx/blob/main/lvgltest.c#L107-L318)
+
 Note that we used `.?` to check for Null Pointers returned by C Functions. Let's find out why...
 
 # Zig Checks Null Pointers
