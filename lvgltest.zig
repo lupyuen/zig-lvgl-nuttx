@@ -71,14 +71,14 @@ pub export fn lvgltest_main(
 }
 
 pub export fn create_widgets() void {
-    var screen: ?*c.lv_obj_t = c.lv_scr_act();
-    var label: ?*c.lv_obj_t = c.lv_label_create(screen, null);
-    c.lv_label_set_long_mode(label, @bitCast(c.lv_label_long_mode_t, @truncate(i8, c.LV_LABEL_LONG_BREAK)));
-    c.lv_label_set_recolor(label, @as(c_int, 1) != 0);
-    c.lv_label_set_align(label, @bitCast(c.lv_label_align_t, @truncate(i8, c.LV_LABEL_ALIGN_CENTER)));
+    var screen = c.lv_scr_act();
+    var label = c.lv_label_create(screen, null);
+    c.lv_label_set_long_mode(label, c.LV_LABEL_LONG_BREAK);
+    c.lv_label_set_recolor(label, true);
+    c.lv_label_set_align(label, c.LV_LABEL_ALIGN_CENTER);
     c.lv_label_set_text(label, "#ff0000 HELLO# #00aa00 PINEDIO# #0000ff STACK!# ");
-    c.lv_obj_set_width(label, @bitCast(c.lv_coord_t, @truncate(c_short, @as(c_int, 200))));
-    c.lv_obj_align(label, null, @bitCast(c.lv_align_t, @truncate(i8, c.LV_ALIGN_CENTER)), @bitCast(c.lv_coord_t, @truncate(c_short, @as(c_int, 0))), @bitCast(c.lv_coord_t, @truncate(c_short, -@as(c_int, 30))));
+    c.lv_obj_set_width(label, 200);
+    c.lv_obj_align(label, null, c.LV_ALIGN_CENTER, 0, -30);
 }
 
 pub export fn monitor_cb(
