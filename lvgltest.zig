@@ -49,20 +49,39 @@ pub export fn lvgltest_main(
     _ = _argv;
     const disp_drv = c.get_disp_drv();
     const disp_buf = c.get_disp_buf();
+
+    // LVGL initialization
     c.lv_init();
+
+    // Basic LVGL display driver initialization
     c.init_disp_buf(disp_buf);
     c.init_disp_drv(disp_drv, disp_buf, monitor_cb);
-    if (c.lcddev_init(disp_drv) != 0) {
-        if (c.fbdev_init(disp_drv) != 0) {
-            return 1;
+
+    // Display interface initialization
+    if (c.lcddev_init(disp_drv) != c.EXIT_SUCCESS) {
+        // Failed to use lcd driver falling back to framebuffer
+        if (c.fbdev_init(disp_drv) != c.EXIT_SUCCESS) {
+            // No possible drivers left, fail
+            return c.EXIT_FAILURE;
         }
     }
     _ = c.lv_disp_drv_register(disp_drv);
+
+    // Touchpad Initialization
     _ = c.tp_init();
     const indev_drv = c.get_indev_drv();
+
+    // tp_read will be called periodically (by the library) to get the
+    // mouse position and state
     c.init_indev_drv(indev_drv, c.tp_read);
+
+    // Create the widgets for display
     create_widgets();
+
+    // Start TP calibration
     c.tp_cal_create();
+
+    // Handle LVGL tasks
     while (true) {
         _ = c.lv_task_handler();
         _ = c.usleep(10000);
@@ -70,22 +89,47 @@ pub export fn lvgltest_main(
     return 0;
 }
 
+/// Create the LVGL Widgets that will be rendered on the display. Based on
+/// https://docs.lvgl.io/7.11/widgets/label.html#label-recoloring-and-scrolling
 pub export fn create_widgets() void {
-    var screen = c.lv_scr_act();
-    var label = c.lv_label_create(screen, null);
+
+    // Get the Active Screen
+    const screen = c.lv_scr_act();
+
+    // Create a Label Widget
+    const label = c.lv_label_create(screen, null);
+
+    // Wrap long lines in the label text
     c.lv_label_set_long_mode(label, c.LV_LABEL_LONG_BREAK);
+
+    // Interpret color codes in the label text
     c.lv_label_set_recolor(label, true);
+
+    // Center align the label text
     c.lv_label_set_align(label, c.LV_LABEL_ALIGN_CENTER);
-    c.lv_label_set_text(label, "#ff0000 HELLO# #00aa00 PINEDIO# #0000ff STACK!# ");
+
+    // Set the label text and colors
+    c.lv_label_set_text(
+        label, 
+        "#ff0000 HELLO# " ++    // Red Text
+        "#00aa00 PINEDIO# " ++  // Green Text
+        "#0000ff STACK!# "      // Blue Text
+    );
+
+    // Set the label width
     c.lv_obj_set_width(label, 200);
+
+    // Align the label to the center of the screen, shift 30 pixels up
     c.lv_obj_align(label, null, c.LV_ALIGN_CENTER, 0, -30);
 }
 
+/// Monitoring callback from LVGL every time the screen is flushed
 pub export fn monitor_cb(
     _disp_drv: ?*c.lv_disp_drv_t, 
     _time: u32, 
     _px: u32
 ) void {
+    // Do nothing
     _ = _disp_drv;
     _ = _time;
     _ = _px;
