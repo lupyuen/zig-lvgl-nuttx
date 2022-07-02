@@ -822,13 +822,13 @@ The Stack Trace Address `23023606` points to the line of code that encountered t
 ```text
 zig-lvgl-nuttx/lvgltest.zig:50
     const disp_drv = c.get_disp_drv().?;
-230235f4:	23089537          	lui	    a0,0x23089
-230235f8:	5ac50513          	addi	a0,a0,1452 # 230895ac <__unnamed_10>
-230235fc:	4581                li	    a1,0
-230235fe:	00000097          	auipc	ra,0x0
-23023602:	c92080e7          	jalr	-878(ra) # 23023290 <panic>
-23023606:	ff042503          	lw	    a0,-16(s0)
-2302360a:	fea42623          	sw	    a0,-20(s0)
+230235f4:   23089537            lui     a0,0x23089
+230235f8:   5ac50513            addi    a0,a0,1452 # 230895ac <__unnamed_10>
+230235fc:   4581                li      a1,0
+230235fe:   00000097            auipc   ra,0x0
+23023602:   c92080e7            jalr    -878(ra) # 23023290 <panic>
+23023606:   ff042503            lw      a0,-16(s0)
+2302360a:   fea42623            sw      a0,-20(s0)
 ```
 
 So Zig really helps us to write safer programs.
