@@ -320,7 +320,9 @@ After this modification, our Auto-Translation from C to Zig now contains the 2 m
 
 # Input Driver
 
-TODO
+Our Input Driver `lv_indev_drv_t` is also an Opaque Type because it contains Bit Fields.
+
+We fix `lv_indev_drv_t` the same way as other Opaque Types: We allocate and initialise the structs in C (instead of Zig)...
 
 ```c
 /****************************************************************************
