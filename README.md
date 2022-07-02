@@ -683,22 +683,125 @@ invert x/y:1, x:0, y:1
 
 # Clean Up
 
-TODO: Clean up the Zig LVGL App
+After cleaning up our Zig LVGL App, here's our Main Function `lvgltest_main`...
 
-# Zig Checks Null Pointers
+```zig
+/// Main Function that will be called by NuttX. We render an LVGL Screen and
+/// handle Touch Input.
+pub export fn lvgltest_main(
+    _argc: c_int, 
+    _argv: [*]const [*]const u8
+) c_int {
+    debug("Zig LVGL Test", .{});
+    _ = _argc;
+    _ = _argv;
+    const disp_drv = c.get_disp_drv().?;
+    const disp_buf = c.get_disp_buf().?;
 
-TODO
+    // LVGL initialization
+    c.lv_init();
 
-```c
-lv_disp_drv_t *get_disp_drv(void)
-{
-  static lv_disp_drv_t disp_drv;
-  return NULL; ////
-  ////return &disp_drv;
+    // Basic LVGL display driver initialization
+    c.init_disp_buf(disp_buf);
+    c.init_disp_drv(disp_drv, disp_buf, monitor_cb);
+
+    // Display interface initialization
+    if (c.lcddev_init(disp_drv) != c.EXIT_SUCCESS) {
+        // Failed to use lcd driver falling back to framebuffer
+        if (c.fbdev_init(disp_drv) != c.EXIT_SUCCESS) {
+            // No possible drivers left, fail
+            return c.EXIT_FAILURE;
+        }
+    }
+    _ = c.lv_disp_drv_register(disp_drv);
+
+    // Touchpad Initialization
+    _ = c.tp_init();
+    const indev_drv = c.get_indev_drv().?;
+
+    // tp_read will be called periodically (by the library) to get the
+    // mouse position and state
+    c.init_indev_drv(indev_drv, c.tp_read);
+
+    // Create the widgets for display
+    create_widgets();
+
+    // Start TP calibration
+    c.tp_cal_create();
+
+    // Handle LVGL tasks
+    while (true) {
+        _ = c.lv_task_handler();
+        _ = c.usleep(10000);
+    }
+    return 0;
 }
 ```
 
-TODO
+[(Source)](https://github.com/lupyuen/zig-lvgl-nuttx/blob/main/lvgltest.zig#L41-L90)
+
+And here's our function that creates widgets: `create_widgets`...
+
+```zig
+/// Create the LVGL Widgets that will be rendered on the display. Based on
+/// https://docs.lvgl.io/7.11/widgets/label.html#label-recoloring-and-scrolling
+pub export fn create_widgets() void {
+
+    // Get the Active Screen
+    const screen = c.lv_scr_act().?;
+
+    // Create a Label Widget
+    const label = c.lv_label_create(screen, null).?;
+
+    // Wrap long lines in the label text
+    c.lv_label_set_long_mode(label, c.LV_LABEL_LONG_BREAK);
+
+    // Interpret color codes in the label text
+    c.lv_label_set_recolor(label, true);
+
+    // Center align the label text
+    c.lv_label_set_align(label, c.LV_LABEL_ALIGN_CENTER);
+
+    // Set the label text and colors
+    c.lv_label_set_text(
+        label, 
+        "#ff0000 HELLO# " ++    // Red Text
+        "#00aa00 PINEDIO# " ++  // Green Text
+        "#0000ff STACK!# "      // Blue Text
+    );
+
+    // Set the label width
+    c.lv_obj_set_width(label, 200);
+
+    // Align the label to the center of the screen, shift 30 pixels up
+    c.lv_obj_align(label, null, c.LV_ALIGN_CENTER, 0, -30);
+}
+```
+
+[(Source)](https://github.com/lupyuen/zig-lvgl-nuttx/blob/main/lvgltest.zig#L92-L124)
+
+Note that we used `.?` to check for Null Pointers returned by C Functions. Let's find out why...
+
+# Zig Checks Null Pointers
+
+_What happens if a C Function returns a Null Pointer..._
+
+```c
+lv_disp_drv_t *get_disp_drv(void) {
+  // Return a Null Pointer
+  return NULL;
+}
+```
+
+_And we call it from Zig?_
+
+```zig
+const disp_drv = c.get_disp_drv().?;
+```
+
+Note that we used `.?` to check for Null Pointers returned by C Functions.
+
+When we run this code, we'll see a Zig Panic...
 
 ```text
 nsh> lvgltest
@@ -710,7 +813,7 @@ Stack Trace:
 0x23023606
 ```
 
-TODO
+The Stack Trace Address `23023606` points to the line of code that encountered the Null Pointer...
 
 ```text
 zig-lvgl-nuttx/lvgltest.zig:50
@@ -723,3 +826,19 @@ zig-lvgl-nuttx/lvgltest.zig:50
 23023606:	ff042503          	lw	    a0,-16(s0)
 2302360a:	fea42623          	sw	    a0,-20(s0)
 ```
+
+So Zig really helps us to write safer programs.
+
+_What if we omit `.?` and do this?_
+
+```zig
+const disp_drv = c.get_disp_drv();
+```
+
+This crashes with a RISC-V Exception when the code tries to dereference the Null Pointer later. Which is not as helpful as a Zig Panic.
+
+Thus we always use `.?` to check for Null Pointers returned by C Functions!
+
+# Simplify the LVGL API
+
+TODO
