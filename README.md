@@ -742,7 +742,7 @@ pub export fn lvgltest_main(
 
 [(Source)](https://github.com/lupyuen/zig-lvgl-nuttx/blob/main/lvgltest.zig#L41-L90)
 
-And here's our function that creates widgets: `create_widgets`...
+And here's our `create_widgets` function that creates widgets...
 
 ```zig
 /// Create the LVGL Widgets that will be rendered on the display. Based on
