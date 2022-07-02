@@ -416,20 +416,20 @@ typedef union {
 
 # LVGL App in Zig
 
-We take these functions from the Auto-Translated Zig code...
+We copy these functions from the Auto-Translated Zig code...
 
 -   [`lvgltest_main`](https://github.com/lupyuen/zig-lvgl-nuttx/blob/main/translated/lvgltest.zig#L5913-L5944)
 
 -   [`create_widgets`](https://github.com/lupyuen/zig-lvgl-nuttx/blob/main/translated/lvgltest.zig#L5903-L5912)
 
-And create our LVGL App in Zig...
+And paste them into our Zig LVGL App...
 
 https://github.com/lupyuen/zig-lvgl-nuttx/blob/ec4d58e84140cbf2b8fd6a80b65c06f6da97edfc/lvgltest.zig#L1-L164
 
-To compile our LVGL Zig App...
+To compile our Zig LVGL App...
 
 ```bash
-##  Download our LVGL Zig App for NuttX
+##  Download our Zig LVGL App for NuttX
 git clone --recursive https://github.com/lupyuen/zig-lvgl-nuttx
 cd zig-lvgl-nuttx
 
