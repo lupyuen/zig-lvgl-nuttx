@@ -252,9 +252,44 @@ lv_disp_buf_t *get_disp_buf(void)
   static lv_disp_buf_t disp_buf;
   return &disp_buf;
 }
+
+/****************************************************************************
+ * Name: init_disp_drv
+ *
+ * Description:
+ *   Initialise the Display Driver, because Zig can't access its fields.
+ *
+ ****************************************************************************/
+
+void init_disp_drv(lv_disp_drv_t *disp_drv,
+  lv_disp_buf_t *disp_buf,
+  void (*monitor_cb)(struct _disp_drv_t *, uint32_t, uint32_t))
+{
+  assert(disp_drv != NULL);
+  assert(disp_buf != NULL);
+  assert(monitor_cb != NULL);
+
+  lv_disp_drv_init(disp_drv);
+  disp_drv->buffer = disp_buf;
+  disp_drv->monitor_cb = monitor_cb;
+}
+
+/****************************************************************************
+ * Name: init_disp_buf
+ *
+ * Description:
+ *   Initialise the Display Buffer, because Zig can't access the fields.
+ *
+ ****************************************************************************/
+
+void init_disp_buf(lv_disp_buf_t *disp_buf)
+{
+  assert(disp_buf != NULL);
+  lv_disp_buf_init(disp_buf, buffer1, buffer2, DISPLAY_BUFFER_SIZE);
+}
 ```
 
-[(Source)](https://github.com/lupyuen/lvgltest-nuttx/blob/main/lcddev.c#L317-L345)
+[(Source)](https://github.com/lupyuen/lvgltest-nuttx/blob/main/lcddev.c#L335-L398)
 
 Then we fetch the pointers to these structs in our Main Function...
 
