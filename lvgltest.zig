@@ -125,8 +125,8 @@ pub export fn create_widgets() void {
 
 /// Monitoring callback from LVGL every time the screen is flushed
 pub export fn monitor_cb(
-    _disp_drv: ?*c.lv_disp_drv_t, 
-    _time: u32, 
+    _disp_drv: ?*c.lv_disp_drv_t,
+    _time: u32,
     _px: u32
 ) void {
     // Do nothing
