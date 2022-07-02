@@ -291,7 +291,7 @@ void init_disp_buf(lv_disp_buf_t *disp_buf)
 
 [(Source)](https://github.com/lupyuen/lvgltest-nuttx/blob/main/lcddev.c#L335-L398)
 
-Then we fetch the pointers to these structs in our Main Function...
+Then we fetch the pointers to these structs in our Main Function and initialise the structs...
 
 ```c
 int lvgltest_main(int argc, FAR char *argv[])
@@ -299,15 +299,72 @@ int lvgltest_main(int argc, FAR char *argv[])
   lv_disp_drv_t *disp_drv = get_disp_drv();
   lv_disp_buf_t *disp_buf = get_disp_buf();
   ...
+  /* Basic LVGL display driver initialization */
+  init_disp_buf(disp_buf);
+  init_disp_drv(disp_drv, disp_buf, monitor_cb);
+  ...
+  /* Touchpad Initialization */
+  lv_indev_drv_t *indev_drv = get_indev_drv();
+  init_indev_drv(indev_drv, tp_read);
 ```
 
-[(Source)](https://github.com/lupyuen/lvgltest-nuttx/blob/main/lvgltest.c#L225-L228)
+[(Source)](https://github.com/lupyuen/lvgltest-nuttx/blob/main/lvgltest.c#L214-L293)
+
+(`get_indev_drv` and `init_indev_drv` are explained in the next section)
 
 After this modification, our Auto-Translation from C to Zig now contains the 2 missing functions...
 
--   [`lvgltest_main()`](https://github.com/lupyuen/zig-lvgl-nuttx/blob/main/translated/lvgltest.zig#L5913-L5944)
+-   [`lvgltest_main`](https://github.com/lupyuen/zig-lvgl-nuttx/blob/main/translated/lvgltest.zig#L5913-L5944)
 
--   [`create_widgets()`](https://github.com/lupyuen/zig-lvgl-nuttx/blob/main/translated/lvgltest.zig#L5903-L5912)
+-   [`create_widgets`](https://github.com/lupyuen/zig-lvgl-nuttx/blob/main/translated/lvgltest.zig#L5903-L5912)
+
+# Input Driver
+
+TODO
+
+```c
+/****************************************************************************
+ * Name: get_indev_drv
+ *
+ * Description:
+ *   Return the static instance of Input Driver, because Zig can't
+ *   allocate structs wth bitfields inside.
+ *
+ ****************************************************************************/
+
+lv_indev_drv_t *get_indev_drv(void)
+{
+  static lv_indev_drv_t indev_drv;
+  return &indev_drv;
+}
+
+/****************************************************************************
+ * Name: init_indev_drv
+ *
+ * Description:
+ *   Initialise the Input Driver, because Zig can't access its fields.
+ *
+ ****************************************************************************/
+
+void init_indev_drv(lv_indev_drv_t *indev_drv,
+  bool (*read_cb)(struct _lv_indev_drv_t *, lv_indev_data_t *))
+{
+  assert(indev_drv != NULL);
+  assert(read_cb != NULL);
+
+  lv_indev_drv_init(indev_drv);
+  indev_drv->type = LV_INDEV_TYPE_POINTER;
+
+  /* This function will be called periodically (by the library) to get the
+   * mouse position and state.
+   */
+
+  indev_drv->read_cb = read_cb;
+  lv_indev_drv_register(indev_drv);
+}
+```
+
+[(Source)](https://github.com/lupyuen/lvgltest-nuttx/blob/main/tp.c#L282-L320)
 
 # Color Type
 
