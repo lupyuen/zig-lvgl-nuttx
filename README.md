@@ -681,6 +681,45 @@ range x:189, y:162
 invert x/y:1, x:0, y:1
 ```
 
-# TODO
+# Clean Up
 
 TODO: Clean up the Zig LVGL App
+
+# Zig Checks Null Pointers
+
+TODO
+
+```c
+lv_disp_drv_t *get_disp_drv(void)
+{
+  static lv_disp_drv_t disp_drv;
+  return NULL; ////
+  ////return &disp_drv;
+}
+```
+
+TODO
+
+```text
+nsh> lvgltest
+Zig LVGL Test
+
+!ZIG PANIC!
+attempt to use null value
+Stack Trace:
+0x23023606
+```
+
+TODO
+
+```text
+zig-lvgl-nuttx/lvgltest.zig:50
+    const disp_drv = c.get_disp_drv().?;
+230235f4:	23089537          	lui	    a0,0x23089
+230235f8:	5ac50513          	addi	a0,a0,1452 # 230895ac <__unnamed_10>
+230235fc:	4581                li	    a1,0
+230235fe:	00000097          	auipc	ra,0x0
+23023602:	c92080e7          	jalr	-878(ra) # 23023290 <panic>
+23023606:	ff042503          	lw	    a0,-16(s0)
+2302360a:	fea42623          	sw	    a0,-20(s0)
+```

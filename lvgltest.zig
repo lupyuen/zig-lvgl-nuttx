@@ -47,8 +47,8 @@ pub export fn lvgltest_main(
     debug("Zig LVGL Test", .{});
     _ = _argc;
     _ = _argv;
-    const disp_drv = c.get_disp_drv();
-    const disp_buf = c.get_disp_buf();
+    const disp_drv = c.get_disp_drv().?;
+    const disp_buf = c.get_disp_buf().?;
 
     // LVGL initialization
     c.lv_init();
@@ -69,7 +69,7 @@ pub export fn lvgltest_main(
 
     // Touchpad Initialization
     _ = c.tp_init();
-    const indev_drv = c.get_indev_drv();
+    const indev_drv = c.get_indev_drv().?;
 
     // tp_read will be called periodically (by the library) to get the
     // mouse position and state
@@ -94,10 +94,10 @@ pub export fn lvgltest_main(
 pub export fn create_widgets() void {
 
     // Get the Active Screen
-    const screen = c.lv_scr_act();
+    const screen = c.lv_scr_act().?;
 
     // Create a Label Widget
-    const label = c.lv_label_create(screen, null);
+    const label = c.lv_label_create(screen, null).?;
 
     // Wrap long lines in the label text
     c.lv_label_set_long_mode(label, c.LV_LABEL_LONG_BREAK);
