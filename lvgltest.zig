@@ -89,6 +89,9 @@ pub export fn lvgltest_main(
     return 0;
 }
 
+///////////////////////////////////////////////////////////////////////////////
+//  Create Widgets
+
 /// Create the LVGL Widgets that will be rendered on the display. Based on
 /// https://docs.lvgl.io/7.11/widgets/label.html#label-recoloring-and-scrolling
 pub export fn create_widgets() void {
@@ -122,6 +125,9 @@ pub export fn create_widgets() void {
     // Align the label to the center of the screen, shift 30 pixels up
     c.lv_obj_align(label, null, c.LV_ALIGN_CENTER, 0, -30);
 }
+
+///////////////////////////////////////////////////////////////////////////////
+//  Callbacks
 
 /// Monitoring callback from LVGL every time the screen is flushed
 pub export fn monitor_cb(
