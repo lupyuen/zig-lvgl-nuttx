@@ -1,5 +1,10 @@
+//! LVGL Test App that renders an LVGL Screen and handles Touch Input
+
 /// Import the Zig Standard Library
 const std = @import("std");
+
+/// Import the LVGL Module
+const lvgl = @import("lvgl.zig");
 
 /// Import the LVGL Library from C
 const c = @cImport({
@@ -124,60 +129,6 @@ fn createWidgets() !void {
     // Align the label to the center of the screen, shift 30 pixels up
     label.alignObject(c.LV_ALIGN_CENTER, 0, -30);
 }
-
-pub const lvgl = struct {
-    pub fn getActiveScreen() !Object {
-        const screen = c.lv_scr_act().?;  // TODO: Return error
-        return Object.init(screen);
-    }
-
-    pub const Object = struct {
-        obj: *c.lv_obj_t,
-
-        pub fn init(obj: *c.lv_obj_t) Object {
-            return Object{ .obj = obj };
-        }
-
-        pub fn createLabel(self: *Object) !Label {
-            const copy: ?*const c.lv_obj_t = null;
-            const label = c.lv_label_create(self.obj, copy).?;  // TODO: Return error
-            return Label.init(label);
-        }
-    };
-
-    pub const Label = struct {
-        obj: *c.lv_obj_t,
-
-        pub fn init(obj: *c.lv_obj_t) Label {
-            return Label{ .obj = obj };
-        }
-
-        pub fn setLongMode(self: *Label, long_mode: c.lv_label_long_mode_t) void {
-            c.lv_label_set_long_mode(self.obj, long_mode);
-        }
-
-        pub fn setAlign(self: *Label, alignment: c.lv_label_align_t) void {
-            c.lv_label_set_align(self.obj, alignment);
-        }
-
-        pub fn setRecolor(self: *Label, en: bool) void {
-            c.lv_label_set_recolor(self.obj, en);
-        }
-
-        pub fn setText(self: *Label, text: [*c]const u8) void {
-            c.lv_label_set_text(self.obj, text);
-        }
-
-        pub fn setWidth(self: *Label, w: c.lv_coord_t) void {
-            c.lv_obj_set_width(self.obj, w);
-        }
-
-        pub fn alignObject(self: *Label, alignment: c.lv_align_t, x_ofs: c.lv_coord_t, y_ofs: c.lv_coord_t) void {
-            const base: ?*const c.lv_obj_t = null;
-            c.lv_obj_align(self.obj, base, alignment, x_ofs, y_ofs);
-        }
-    };
-};
 
 ///////////////////////////////////////////////////////////////////////////////
 //  Callbacks
