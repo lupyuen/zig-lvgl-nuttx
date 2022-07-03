@@ -843,6 +843,8 @@ This crashes with a RISC-V Exception when the code tries to dereference the Null
 
 Thus we always use `.?` to check for Null Pointers returned by C Functions!
 
+(Hopefully someday we'll have a Zig Lint Tool that will warn us if we forget to use `.?`)
+
 # Simplify the LVGL API
 
 TODO
