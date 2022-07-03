@@ -51,18 +51,20 @@ pub export fn lvgltest_main(
     _ = _argc;
     _ = _argv;
 
-    // LVGL initialization
+    // Init LVGL Library
     c.lv_init();
 
-    // Basic LVGL display driver initialization
-    const disp_drv = c.get_disp_drv().?;
+    // Init the Display Buffer
     const disp_buf = c.get_disp_buf().?;
     c.init_disp_buf(disp_buf);
+
+    // Init the Display Driver
+    const disp_drv = c.get_disp_drv().?;
     c.init_disp_drv(disp_drv, disp_buf, monitorCallback);
 
-    // Display interface initialization
+    // Init the LCD Driver
     if (c.lcddev_init(disp_drv) != c.EXIT_SUCCESS) {
-        // Failed to use lcd driver falling back to framebuffer
+        // If failed, try Framebuffer Driver
         if (c.fbdev_init(disp_drv) != c.EXIT_SUCCESS) {
             // No possible drivers left, fail
             return c.EXIT_FAILURE;
@@ -70,23 +72,26 @@ pub export fn lvgltest_main(
     }
     _ = c.lv_disp_drv_register(disp_drv);
 
-    // Touchpad Initialization
+    // Init Touch Panel
     _ = c.tp_init();
 
-    // tp_read will be called periodically (by the library) to get the
-    // mouse position and state
+    // Init Input Device. tp_read will be called periodically
+    // to get the touched position and state
     const indev_drv = c.get_indev_drv().?;
     c.init_indev_drv(indev_drv, c.tp_read);
 
     // Create the widgets for display
     try createWidgets();
 
-    // Start TP calibration
+    // Start Touch Panel calibration
     c.tp_cal_create();
 
-    // Handle LVGL tasks
+    // Loop forever handing LVGL tasks
     while (true) {
+        // Handle LVGL tasks
         _ = c.lv_task_handler();
+
+        // Sleep a while
         _ = c.usleep(10000);
     }
     return 0;
