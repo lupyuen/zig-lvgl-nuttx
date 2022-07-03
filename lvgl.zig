@@ -18,23 +18,9 @@ const c = @cImport({
     // NuttX Header Files
     @cInclude("arch/types.h");
     @cInclude("../../nuttx/include/limits.h");
-    @cInclude("stdio.h");
-    @cInclude("nuttx/config.h");
-    @cInclude("sys/boardctl.h");
-    @cInclude("unistd.h");
-    @cInclude("stddef.h");
-    @cInclude("stdlib.h");
-    @cInclude("time.h");
-    @cInclude("debug.h");
 
     // LVGL Header Files
     @cInclude("lvgl/lvgl.h");
-
-    // App Header Files
-    @cInclude("fbdev.h");
-    @cInclude("lcddev.h");
-    @cInclude("tp.h");
-    @cInclude("tp_cal.h");
 });
 
 /// Return the Active Screen

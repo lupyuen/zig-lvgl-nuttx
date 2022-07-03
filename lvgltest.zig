@@ -27,8 +27,6 @@ const c = @cImport({
     @cInclude("unistd.h");
     @cInclude("stddef.h");
     @cInclude("stdlib.h");
-    @cInclude("time.h");
-    @cInclude("debug.h");
 
     // LVGL Header Files
     @cInclude("lvgl/lvgl.h");
@@ -52,13 +50,13 @@ pub export fn lvgltest_main(
     debug("Zig LVGL Test", .{});
     _ = _argc;
     _ = _argv;
-    const disp_drv = c.get_disp_drv().?;
-    const disp_buf = c.get_disp_buf().?;
 
     // LVGL initialization
     c.lv_init();
 
     // Basic LVGL display driver initialization
+    const disp_drv = c.get_disp_drv().?;
+    const disp_buf = c.get_disp_buf().?;
     c.init_disp_buf(disp_buf);
     c.init_disp_drv(disp_drv, disp_buf, monitorCallback);
 
@@ -74,10 +72,10 @@ pub export fn lvgltest_main(
 
     // Touchpad Initialization
     _ = c.tp_init();
-    const indev_drv = c.get_indev_drv().?;
 
     // tp_read will be called periodically (by the library) to get the
     // mouse position and state
+    const indev_drv = c.get_indev_drv().?;
     c.init_indev_drv(indev_drv, c.tp_read);
 
     // Create the widgets for display
