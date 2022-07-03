@@ -845,7 +845,7 @@ Thus we always use `.?` to check for Null Pointers returned by C Functions!
 
 (Hopefully someday we'll have a Zig Lint Tool that will warn us if we forget to use `.?`)
 
-# Simplify the LVGL API
+# Simplify LVGL API
 
 _Can we simplify the LVGL API in Zig? Such that this code..._
 
@@ -863,11 +863,13 @@ c.lv_label_set_long_mode(label, c.LV_LABEL_LONG_BREAK);
 c.lv_label_set_recolor(label, true);
 ```
 
+[(Source)](https://github.com/lupyuen/zig-lvgl-nuttx/blob/0f55b49888e26dc168147be13c36a5149e58787f/lvgltest.zig#L92-L124)
+
 _Becomes this?_
 
 ```zig
 // Get the Active Screen
-var screen = try lv.getActiveScreen();
+var screen = try lvgl.getActiveScreen();
 
 // Create a Label Widget
 var label = try screen.createLabel();
@@ -879,4 +881,174 @@ label.setLongMode(c.LV_LABEL_LONG_BREAK);
 label.setRecolor(true);
 ```
 
+[(Source)](https://github.com/lupyuen/zig-lvgl-nuttx/blob/9e0722f8236ac28a5850fa0d407268b3537efdac/lvgltest.zig#L100-L135)
+
+Yes we can! By wrapping the LVGL API in Zig.
+
+Note that we now use `try` instead of `.?`.
+
+_What happens if we forget to use `try`?_
+
 TODO
+
+```zig
+// Get the Active Screen without `try`
+var screen = lvgl.getActiveScreen();
+
+// Attempt to use the Active Screen
+_ = screen;
+```
+
+TODO
+
+```text
+./lvgltest.zig:109:9:
+error: error is discarded. 
+consider using `try`, `catch`, or `if`
+    _ = screen;
+        ^
+```
+
+Thus `try` is actually safer than `.?`, Zig Compiler mandates that we check for errors.
+
+Let's wrap the LVGL API in Zig...
+
+# Wrap LVGL API
+
+TODO
+
+```zig
+/// Return the Active Screen
+pub fn getActiveScreen() !Object {
+
+    // Get the Active Screen
+    const screen = c.lv_scr_act().?;  // TODO: Return error
+
+    // Wrap as Object and return it
+    return Object.init(screen);
+}
+```
+
+[(Source)](https://github.com/lupyuen/zig-lvgl-nuttx/blob/main/lvgl.zig#L26-L34)
+
+TODO
+
+```zig
+/// LVGL Object
+pub const Object = struct {
+
+    /// Pointer to LVGL Object
+    obj: *c.lv_obj_t,
+
+    /// Init the Object
+    pub fn init(obj: *c.lv_obj_t) Object {
+        return Object{ .obj = obj };
+    }
+
+    /// Create a Label as a child of the Object
+    pub fn createLabel(self: *Object) !Label {
+        // Assume that we won't copy from another Object 
+        const copy: ?*const c.lv_obj_t = null;
+
+        // Create the Label
+        const label = c.lv_label_create(self.obj, copy).?;  // TODO: Return error
+
+        // Wrap as Label and return it
+        return Label.init(label);
+    }
+};
+```
+
+[(Source)](https://github.com/lupyuen/zig-lvgl-nuttx/blob/main/lvgl.zig#L36-L58)
+
+TODO
+
+```zig
+/// LVGL Label
+pub const Label = struct {
+
+    /// Pointer to LVGL Label
+    obj: *c.lv_obj_t,
+
+    /// Init the Label
+    pub fn init(obj: *c.lv_obj_t) Label {
+        return Label{ .obj = obj };
+    }
+
+    /// Set the wrapping of long lines in the label text
+    pub fn setLongMode(self: *Label, long_mode: c.lv_label_long_mode_t) void {
+        c.lv_label_set_long_mode(self.obj, long_mode);
+    }
+
+    /// Set the label text alignment
+    pub fn setAlign(self: *Label, alignment: c.lv_label_align_t) void {
+        c.lv_label_set_align(self.obj, alignment);
+    }
+
+    /// Enable or disable color codes in the label text
+    pub fn setRecolor(self: *Label, en: bool) void {
+        c.lv_label_set_recolor(self.obj, en);
+    }
+
+    /// Set the label text and colors
+    pub fn setText(self: *Label, text: [*c]const u8) void {
+        c.lv_label_set_text(self.obj, text);
+    }
+
+    /// Set the object width
+    pub fn setWidth(self: *Label, w: c.lv_coord_t) void {
+        c.lv_obj_set_width(self.obj, w);
+    }
+
+    /// Set the object alignment
+    pub fn alignObject(self: *Label, alignment: c.lv_align_t, x_ofs: c.lv_coord_t, y_ofs: c.lv_coord_t) void {
+        const base: ?*const c.lv_obj_t = null;
+        c.lv_obj_align(self.obj, base, alignment, x_ofs, y_ofs);
+    }
+};
+```
+
+[(Source)](https://github.com/lupyuen/zig-lvgl-nuttx/blob/main/lvgl.zig#L60-L101)
+
+TODO
+
+# After Wrapping LVGL API
+
+TODO
+
+```zig
+/// Create the LVGL Widgets that will be rendered on the display. Based on
+/// https://docs.lvgl.io/7.11/widgets/label.html#label-recoloring-and-scrolling
+fn createWidgets() !void {
+
+    // Get the Active Screen
+    var screen = try lvgl.getActiveScreen();
+
+    // Create a Label Widget
+    var label = try screen.createLabel();
+
+    // Wrap long lines in the label text
+    label.setLongMode(c.LV_LABEL_LONG_BREAK);
+
+    // Interpret color codes in the label text
+    label.setRecolor(true);
+
+    // Center align the label text
+    label.setAlign(c.LV_LABEL_ALIGN_CENTER);
+
+    // Set the label text and colors
+    label.setText(
+        "#ff0000 HELLO# " ++    // Red Text
+        "#00aa00 PINEDIO# " ++  // Green Text
+        "#0000ff STACK!# "      // Blue Text
+    );
+
+    // Set the label width
+    label.setWidth(200);
+
+    // Align the label to the center of the screen, shift 30 pixels up
+    label.alignObject(c.LV_ALIGN_CENTER, 0, -30);
+}
+```
+
+[(Source)](https://github.com/lupyuen/zig-lvgl-nuttx/blob/9e0722f8236ac28a5850fa0d407268b3537efdac/lvgltest.zig#L100-L135)
