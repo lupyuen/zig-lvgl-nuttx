@@ -740,7 +740,7 @@ pub export fn lvgltest_main(
 }
 ```
 
-[(Source)](https://github.com/lupyuen/zig-lvgl-nuttx/blob/main/lvgltest.zig#L41-L90)
+[(Source)](https://github.com/lupyuen/zig-lvgl-nuttx/blob/0f55b49888e26dc168147be13c36a5149e58787f/lvgltest.zig#L41-L90)
 
 And here's our `create_widgets` function that creates widgets...
 
@@ -780,7 +780,7 @@ pub export fn create_widgets() void {
 }
 ```
 
-[(Source)](https://github.com/lupyuen/zig-lvgl-nuttx/blob/main/lvgltest.zig#L92-L124)
+[(Source)](https://github.com/lupyuen/zig-lvgl-nuttx/blob/0f55b49888e26dc168147be13c36a5149e58787f/lvgltest.zig#L92-L124)
 
 The Zig Functions look very similar to C: [lvgltest.c](https://github.com/lupyuen/lvgltest-nuttx/blob/main/lvgltest.c#L107-L318)
 
@@ -846,5 +846,31 @@ Thus we always use `.?` to check for Null Pointers returned by C Functions!
 (Hopefully someday we'll have a Zig Lint Tool that will warn us if we forget to use `.?`)
 
 # Simplify the LVGL API
+
+_Can we simplify the LVGL API in Zig? Such that this code..._
+
+```zig
+// Create a Label Widget
+const label = c.lv_label_create(screen, null).?;
+
+// Wrap long lines in the label text
+c.lv_label_set_long_mode(label, c.LV_LABEL_LONG_BREAK);
+
+// Interpret color codes in the label text
+c.lv_label_set_recolor(label, true);
+```
+
+_Becomes this?_
+
+```zig
+// Create a Label Widget
+try const label = screen.create_label(null);
+
+// Wrap long lines in the label text
+label.set_long_mode(c.LV_LABEL_LONG_BREAK);
+
+// Interpret color codes in the label text
+label.set_recolor(true);
+```
 
 TODO
