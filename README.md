@@ -747,7 +747,7 @@ And here's our `create_widgets` function that creates widgets...
 ```zig
 /// Create the LVGL Widgets that will be rendered on the display. Based on
 /// https://docs.lvgl.io/7.11/widgets/label.html#label-recoloring-and-scrolling
-pub export fn create_widgets() void {
+fn create_widgets() void {
 
     // Get the Active Screen
     const screen = c.lv_scr_act().?;
@@ -850,6 +850,9 @@ Thus we always use `.?` to check for Null Pointers returned by C Functions!
 _Can we simplify the LVGL API in Zig? Such that this code..._
 
 ```zig
+// Get the Active Screen
+const screen = c.lv_scr_act().?;
+
 // Create a Label Widget
 const label = c.lv_label_create(screen, null).?;
 
@@ -863,14 +866,17 @@ c.lv_label_set_recolor(label, true);
 _Becomes this?_
 
 ```zig
+// Get the Active Screen
+var screen = try lv.getActiveScreen();
+
 // Create a Label Widget
-try const label = screen.create_label(null);
+var label = try screen.createLabel();
 
 // Wrap long lines in the label text
-label.set_long_mode(c.LV_LABEL_LONG_BREAK);
+label.setLongMode(c.LV_LABEL_LONG_BREAK);
 
 // Interpret color codes in the label text
-label.set_recolor(true);
+label.setRecolor(true);
 ```
 
 TODO

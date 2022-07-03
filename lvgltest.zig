@@ -55,7 +55,7 @@ pub export fn lvgltest_main(
 
     // Basic LVGL display driver initialization
     c.init_disp_buf(disp_buf);
-    c.init_disp_drv(disp_drv, disp_buf, monitor_cb);
+    c.init_disp_drv(disp_drv, disp_buf, monitorCallback);
 
     // Display interface initialization
     if (c.lcddev_init(disp_drv) != c.EXIT_SUCCESS) {
@@ -76,7 +76,7 @@ pub export fn lvgltest_main(
     c.init_indev_drv(indev_drv, c.tp_read);
 
     // Create the widgets for display
-    create_widgets();
+    try createWidgets();
 
     // Start TP calibration
     c.tp_cal_create();
@@ -94,43 +94,96 @@ pub export fn lvgltest_main(
 
 /// Create the LVGL Widgets that will be rendered on the display. Based on
 /// https://docs.lvgl.io/7.11/widgets/label.html#label-recoloring-and-scrolling
-pub export fn create_widgets() void {
+fn createWidgets() !void {
 
     // Get the Active Screen
-    const screen = c.lv_scr_act().?;
+    var screen = try lvgl.getActiveScreen();
 
     // Create a Label Widget
-    const label = c.lv_label_create(screen, null).?;
+    var label = try screen.createLabel();
 
     // Wrap long lines in the label text
-    c.lv_label_set_long_mode(label, c.LV_LABEL_LONG_BREAK);
+    label.setLongMode(c.LV_LABEL_LONG_BREAK);
 
     // Interpret color codes in the label text
-    c.lv_label_set_recolor(label, true);
+    label.setRecolor(true);
 
     // Center align the label text
-    c.lv_label_set_align(label, c.LV_LABEL_ALIGN_CENTER);
+    label.setAlign(c.LV_LABEL_ALIGN_CENTER);
 
     // Set the label text and colors
-    c.lv_label_set_text(
-        label, 
+    label.setText(
         "#ff0000 HELLO# " ++    // Red Text
         "#00aa00 PINEDIO# " ++  // Green Text
         "#0000ff STACK!# "      // Blue Text
     );
 
     // Set the label width
-    c.lv_obj_set_width(label, 200);
+    label.setWidth(200);
 
     // Align the label to the center of the screen, shift 30 pixels up
-    c.lv_obj_align(label, null, c.LV_ALIGN_CENTER, 0, -30);
+    label.alignObject(c.LV_ALIGN_CENTER, 0, -30);
 }
+
+pub const lvgl = struct {
+    pub fn getActiveScreen() !Object {
+        const screen = c.lv_scr_act().?;  // TODO: Return error
+        return Object.init(screen);
+    }
+
+    pub const Object = struct {
+        obj: *c.lv_obj_t,
+
+        pub fn init(obj: *c.lv_obj_t) Object {
+            return Object{ .obj = obj };
+        }
+
+        pub fn createLabel(self: *Object) !Label {
+            const copy: ?*const c.lv_obj_t = null;
+            const label = c.lv_label_create(self.obj, copy).?;  // TODO: Return error
+            return Label.init(label);
+        }
+    };
+
+    pub const Label = struct {
+        obj: *c.lv_obj_t,
+
+        pub fn init(obj: *c.lv_obj_t) Label {
+            return Label{ .obj = obj };
+        }
+
+        pub fn setLongMode(self: *Label, long_mode: c.lv_label_long_mode_t) void {
+            c.lv_label_set_long_mode(self.obj, long_mode);
+        }
+
+        pub fn setAlign(self: *Label, alignment: c.lv_label_align_t) void {
+            c.lv_label_set_align(self.obj, alignment);
+        }
+
+        pub fn setRecolor(self: *Label, en: bool) void {
+            c.lv_label_set_recolor(self.obj, en);
+        }
+
+        pub fn setText(self: *Label, text: [*c]const u8) void {
+            c.lv_label_set_text(self.obj, text);
+        }
+
+        pub fn setWidth(self: *Label, w: c.lv_coord_t) void {
+            c.lv_obj_set_width(self.obj, w);
+        }
+
+        pub fn alignObject(self: *Label, alignment: c.lv_align_t, x_ofs: c.lv_coord_t, y_ofs: c.lv_coord_t) void {
+            const base: ?*const c.lv_obj_t = null;
+            c.lv_obj_align(self.obj, base, alignment, x_ofs, y_ofs);
+        }
+    };
+};
 
 ///////////////////////////////////////////////////////////////////////////////
 //  Callbacks
 
 /// Monitoring callback from LVGL every time the screen is flushed
-pub export fn monitor_cb(
+pub export fn monitorCallback(
     _disp_drv: ?*c.lv_disp_drv_t,
     _time: u32,
     _px: u32
