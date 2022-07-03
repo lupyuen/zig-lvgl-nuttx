@@ -54,15 +54,15 @@ pub export fn lvgltest_main(
     // Init LVGL Library
     c.lv_init();
 
-    // Init the Display Buffer
+    // Init Display Buffer
     const disp_buf = c.get_disp_buf().?;
     c.init_disp_buf(disp_buf);
 
-    // Init the Display Driver
+    // Init Display Driver
     const disp_drv = c.get_disp_drv().?;
     c.init_disp_drv(disp_drv, disp_buf, monitorCallback);
 
-    // Init the LCD Driver
+    // Init LCD Driver
     if (c.lcddev_init(disp_drv) != c.EXIT_SUCCESS) {
         // If failed, try Framebuffer Driver
         if (c.fbdev_init(disp_drv) != c.EXIT_SUCCESS) {
@@ -70,6 +70,8 @@ pub export fn lvgltest_main(
             return c.EXIT_FAILURE;
         }
     }
+
+    // Register Display Driver
     _ = c.lv_disp_drv_register(disp_drv);
 
     // Init Touch Panel
@@ -81,7 +83,12 @@ pub export fn lvgltest_main(
     c.init_indev_drv(indev_drv, c.tp_read);
 
     // Create the widgets for display
-    try createWidgets();
+    createWidgets()
+        catch |e| {
+            // In case of error, quit
+            std.log.err("createWidgets failed: {}", .{e});
+            return c.EXIT_FAILURE;
+        };
 
     // Start Touch Panel calibration
     c.tp_cal_create();

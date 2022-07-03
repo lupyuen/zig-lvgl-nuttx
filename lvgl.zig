@@ -27,10 +27,17 @@ const c = @cImport({
 pub fn getActiveScreen() !Object {
 
     // Get the Active Screen
-    const screen = c.lv_scr_act().?;  // TODO: Return error
+    const screen = c.lv_scr_act();
 
-    // Wrap as Object and return it
-    return Object.init(screen);
+    // Check the result
+    if (screen == null) {
+        // Unable to get Active Screen
+        std.log.err("lv_scr_act failed", .{});
+        return LvglError.UnknownError;
+    } else {
+        // Wrap Active Screen as Object and return it
+        return Object.init(screen.?);
+    }
 }
 
 /// LVGL Object
@@ -50,10 +57,17 @@ pub const Object = struct {
         const copy: ?*const c.lv_obj_t = null;
 
         // Create the Label
-        const label = c.lv_label_create(self.obj, copy).?;  // TODO: Return error
+        const label = c.lv_label_create(self.obj, copy);
 
-        // Wrap as Label and return it
-        return Label.init(label);
+        // Check the result
+        if (label == null) {
+            // Unable to create Label
+            std.log.err("lv_label_create failed", .{});
+            return LvglError.UnknownError;
+        } else {
+            // Wrap as Label and return it
+            return Label.init(label.?);
+        }
     }
 };
 
@@ -99,3 +113,5 @@ pub const Label = struct {
         c.lv_obj_align(self.obj, base, alignment, x_ofs, y_ofs);
     }
 };
+
+pub const LvglError = error{ UnknownError };
