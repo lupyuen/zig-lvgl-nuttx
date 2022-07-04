@@ -920,4 +920,12 @@ fn createWidgets() !void {
 
 [(Source)](https://github.com/lupyuen/zig-lvgl-nuttx/blob/9e0722f8236ac28a5850fa0d407268b3537efdac/lvgltest.zig#L100-L135)
 
-TODO: [Python Bindings for LVGL](https://github.com/lvgl/lv_binding_micropython)
+_Can we auto-generate the Wrapper Code?_
+
+TODO: Maybe with Zig Reflection
+
+https://github.com/lupyuen/zig-bl602-nuttx/blob/main/README.md#zig-type-reflection
+
+But Zig Reflection doesn't include the Parameter Types, might need to parse the LLVM IR
+
+TODO: LVGL is object-oriented, might be tricky to wrap. See [Python Bindings for LVGL](https://github.com/lvgl/lv_binding_micropython)
