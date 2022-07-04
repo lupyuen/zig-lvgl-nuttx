@@ -733,7 +733,7 @@ Note that we now use `try` instead of `.?`.
 
 _What happens if we forget to use `try`?_
 
-TODO
+If we don't `try`, like this...
 
 ```zig
 // Get the Active Screen without `try`
@@ -743,7 +743,7 @@ var screen = lvgl.getActiveScreen();
 _ = screen;
 ```
 
-TODO
+Zig Compiler stops with an error...
 
 ```text
 ./lvgltest.zig:109:9:
@@ -754,6 +754,15 @@ consider using `try`, `catch`, or `if`
 ```
 
 Thus `try` is actually safer than `.?`, Zig Compiler mandates that we check for errors.
+
+_What if the LVGL API returns a Null Pointer to our Zig App?_
+
+Our app will fail with this message...
+
+```text
+lv_scr_act failed
+createWidgets failed: error.UnknownError
+```
 
 Let's wrap the LVGL API in Zig...
 

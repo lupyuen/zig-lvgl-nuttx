@@ -114,4 +114,5 @@ pub const Label = struct {
     }
 };
 
+/// LVGL Errors
 pub const LvglError = error{ UnknownError };
