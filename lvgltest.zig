@@ -47,10 +47,10 @@ pub export fn lvgltest_main(
     _argc: c_int, 
     _argv: [*]const [*]const u8
 ) c_int {
-    debug("Zig LVGL Test", .{});
     // Command-line args are not used
     _ = _argc;
     _ = _argv;
+    debug("Zig LVGL Test", .{});
 
     // Init LVGL Library
     c.lv_init();
@@ -115,6 +115,7 @@ pub export fn lvgltest_main(
 /// LVGL API directly, without wrapping in Zig. Based on
 /// https://docs.lvgl.io/7.11/widgets/label.html#label-recoloring-and-scrolling
 fn createWidgetsUnwrapped() !void {
+    debug("createWidgetsUnwrapped", .{});
 
     // Get the Active Screen
     const screen = c.lv_scr_act().?;
@@ -150,6 +151,7 @@ fn createWidgetsUnwrapped() !void {
 /// LVGL API that has been wrapped in Zig. Based on
 /// https://docs.lvgl.io/7.11/widgets/label.html#label-recoloring-and-scrolling
 fn createWidgetsWrapped() !void {
+    debug("createWidgetsWrapped", .{});
 
     // Get the Active Screen
     var screen = try lvgl.getActiveScreen();
