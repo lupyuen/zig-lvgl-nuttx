@@ -48,6 +48,7 @@ pub export fn lvgltest_main(
     _argv: [*]const [*]const u8
 ) c_int {
     debug("Zig LVGL Test", .{});
+    // Command-line args are not used
     _ = _argc;
     _ = _argv;
 
@@ -90,7 +91,7 @@ pub export fn lvgltest_main(
             return c.EXIT_FAILURE;
         };
 
-    // To call the LVGL API wrapped in Zig, change
+    // To call the LVGL API that's wrapped in Zig, change
     // `createWidgetsUnwrapped` above to `createWidgetsWrapped`
 
     // Start Touch Panel calibration

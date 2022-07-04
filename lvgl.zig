@@ -29,14 +29,14 @@ pub fn getActiveScreen() !Object {
     // Get the Active Screen
     const screen = c.lv_scr_act();
 
-    // Check the result
-    if (screen == null) {
+    // If successfully fetched...
+    if (screen) |s| {
+        // Wrap Active Screen as Object and return it
+        return Object.init(s);
+    } else {
         // Unable to get Active Screen
         std.log.err("lv_scr_act failed", .{});
         return LvglError.UnknownError;
-    } else {
-        // Wrap Active Screen as Object and return it
-        return Object.init(screen.?);
     }
 }
 
@@ -53,20 +53,21 @@ pub const Object = struct {
 
     /// Create a Label as a child of the Object
     pub fn createLabel(self: *Object) !Label {
-        // Assume that we won't copy from another Object 
+
+        // Assume we won't copy from another Object 
         const copy: ?*const c.lv_obj_t = null;
 
         // Create the Label
         const label = c.lv_label_create(self.obj, copy);
 
-        // Check the result
-        if (label == null) {
+        // If successfully created...
+        if (label) |l| {
+            // Wrap as Label and return it
+            return Label.init(l);
+        } else {
             // Unable to create Label
             std.log.err("lv_label_create failed", .{});
             return LvglError.UnknownError;
-        } else {
-            // Wrap as Label and return it
-            return Label.init(label.?);
         }
     }
 };
