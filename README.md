@@ -10,6 +10,41 @@ Let's find out!
 
 Here's our LVGL Test App in C (pic above): [lvgltest_main.c](https://github.com/lupyuen/lvgltest-nuttx/blob/main/lvgltest.c) 
 
+```c
+static void create_widgets(void) {
+  //  Get the Active Screen
+  lv_obj_t *screen = lv_scr_act();
+
+  //  Create a Label Widget
+  lv_obj_t *label = lv_label_create(screen, NULL);
+
+  //  Wrap long lines in the label text
+  lv_label_set_long_mode(label, LV_LABEL_LONG_BREAK);
+
+  //  Interpret color codes in the label text
+  lv_label_set_recolor(label, true);
+
+  //  Center align the label text
+  lv_label_set_align(label, LV_LABEL_ALIGN_CENTER);
+
+  //  Set the label text and colors
+  lv_label_set_text(
+    label, 
+    "#ff0000 HELLO# "    //  Red Text
+    "#00aa00 PINEDIO# "  //  Green Text
+    "#0000ff STACK!# "   //  Blue Text
+  );
+
+  //  Set the label width
+  lv_obj_set_width(label, 200);
+
+  //  Align the label to the center of the screen, shift 30 pixels up
+  lv_obj_align(label, NULL, LV_ALIGN_CENTER, 0, -30);
+
+  //  Omitted: LVGL Canvas
+}
+```
+
 NuttX compiles the LVGL Test App with this GCC command...
 
 ```bash
@@ -59,7 +94,13 @@ The Zig Compiler can auto-translate C code to Zig. [(See this)](https://ziglang.
 
 Here's how we auto-translate our LVGL App [lvgltest_main.c](https://github.com/lupyuen/lvgltest-nuttx/blob/main/lvgltest.c) from C to Zig...
 
--   Change `zig cc` to `zig translate-c`
+-   Take the GCC command from above
+
+-   Change `riscv64-unknown-elf-gcc` to `zig translate-c`
+
+-   Add the target `-target riscv32-freestanding-none -mcpu=baseline_rv32-d`
+
+-   Remove `-march=rv32imafc`
 
 -   Surround the C Flags by `-cflags` ... `--`
 
@@ -136,7 +177,7 @@ And the auto-translation from C to Zig: [translated/lvgltest.zig](translated/lvg
 
 # Zig Auto-Translation is Incomplete
 
-The Auto-Translation from C to Zig is missing 2 key functions: `lvgltest_main()` and `create_widgets()`...
+The Auto-Translation from C to Zig is missing 2 key functions: `lvgltest_main` and `create_widgets`...
 
 ```zig
 // lvgltest.c:129:13: warning: unable to translate function, demoted to extern
