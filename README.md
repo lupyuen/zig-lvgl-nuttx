@@ -724,7 +724,7 @@ c.lv_label_set_long_mode(label, c.LV_LABEL_LONG_BREAK);
 c.lv_label_set_recolor(label, true);
 ```
 
-[(Source)](https://github.com/lupyuen/zig-lvgl-nuttx/blob/0f55b49888e26dc168147be13c36a5149e58787f/lvgltest.zig#L92-L124)
+[(Source)](https://github.com/lupyuen/zig-lvgl-nuttx/blob/main/lvgltest.zig#L114-L148)
 
 _Becomes this?_
 
@@ -742,7 +742,7 @@ label.setLongMode(c.LV_LABEL_LONG_BREAK);
 label.setRecolor(true);
 ```
 
-[(Source)](https://github.com/lupyuen/zig-lvgl-nuttx/blob/9e0722f8236ac28a5850fa0d407268b3537efdac/lvgltest.zig#L100-L135)
+[(Source)](https://github.com/lupyuen/zig-lvgl-nuttx/blob/main/lvgltest.zig#L150-L183)
 
 Yes we can! By wrapping the LVGL API in Zig, which we'll do in the next section.
 
