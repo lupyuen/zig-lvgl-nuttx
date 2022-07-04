@@ -83,12 +83,15 @@ pub export fn lvgltest_main(
     c.init_indev_drv(indev_drv, c.tp_read);
 
     // Create the widgets for display
-    createWidgets()
+    createWidgetsUnwrapped()
         catch |e| {
             // In case of error, quit
             std.log.err("createWidgets failed: {}", .{e});
             return c.EXIT_FAILURE;
         };
+
+    // To call the LVGL API wrapped in Zig, change
+    // `createWidgetsUnwrapped` above to `createWidgetsWrapped`
 
     // Start Touch Panel calibration
     c.tp_cal_create();
@@ -107,9 +110,45 @@ pub export fn lvgltest_main(
 ///////////////////////////////////////////////////////////////////////////////
 //  Create Widgets
 
-/// Create the LVGL Widgets that will be rendered on the display. Based on
+/// Create the LVGL Widgets that will be rendered on the display. Calls the
+/// LVGL API directly, without wrapping in Zig. Based on
 /// https://docs.lvgl.io/7.11/widgets/label.html#label-recoloring-and-scrolling
-fn createWidgets() !void {
+fn createWidgetsUnwrapped() !void {
+
+    // Get the Active Screen
+    const screen = c.lv_scr_act().?;
+
+    // Create a Label Widget
+    const label = c.lv_label_create(screen, null).?;
+
+    // Wrap long lines in the label text
+    c.lv_label_set_long_mode(label, c.LV_LABEL_LONG_BREAK);
+
+    // Interpret color codes in the label text
+    c.lv_label_set_recolor(label, true);
+
+    // Center align the label text
+    c.lv_label_set_align(label, c.LV_LABEL_ALIGN_CENTER);
+
+    // Set the label text and colors
+    c.lv_label_set_text(
+        label, 
+        "#ff0000 HELLO# " ++    // Red Text
+        "#00aa00 PINEDIO# " ++  // Green Text
+        "#0000ff STACK!# "      // Blue Text
+    );
+
+    // Set the label width
+    c.lv_obj_set_width(label, 200);
+
+    // Align the label to the center of the screen, shift 30 pixels up
+    c.lv_obj_align(label, null, c.LV_ALIGN_CENTER, 0, -30);
+}
+
+/// Create the LVGL Widgets that will be rendered on the display. Calls the
+/// LVGL API that has been wrapped in Zig. Based on
+/// https://docs.lvgl.io/7.11/widgets/label.html#label-recoloring-and-scrolling
+fn createWidgetsWrapped() !void {
 
     // Get the Active Screen
     var screen = try lvgl.getActiveScreen();
