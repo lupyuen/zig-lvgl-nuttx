@@ -727,7 +727,7 @@ label.setRecolor(true);
 
 [(Source)](https://github.com/lupyuen/zig-lvgl-nuttx/blob/9e0722f8236ac28a5850fa0d407268b3537efdac/lvgltest.zig#L100-L135)
 
-Yes we can! By wrapping the LVGL API in Zig.
+Yes we can! By wrapping the LVGL API in Zig, which we'll do in the next section.
 
 Note that we now use `try` instead of `.?`.
 
@@ -764,11 +764,9 @@ lv_scr_act failed
 createWidgets failed: error.UnknownError
 ```
 
-Let's wrap the LVGL API in Zig...
-
 # Wrap LVGL API
 
-TODO
+TODO: Let's wrap the LVGL API in Zig...
 
 ```zig
 /// Return the Active Screen
