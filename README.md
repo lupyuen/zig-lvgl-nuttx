@@ -766,7 +766,9 @@ createWidgets failed: error.UnknownError
 
 # Wrap LVGL API
 
-TODO: Let's wrap the LVGL API in Zig...
+Let's wrap the LVGL API in Zig.
+
+Here's the implementation of `getActiveScreen`, which returns the LVGL Active Screen...
 
 ```zig
 /// Return the Active Screen
@@ -789,7 +791,7 @@ pub fn getActiveScreen() !Object {
 
 [(Source)](https://github.com/lupyuen/zig-lvgl-nuttx/blob/main/lvgl.zig#L26-L34)
 
-TODO
+`Object` is a Zig Struct that wraps around an LVGL Object...
 
 ```zig
 /// LVGL Object
@@ -826,7 +828,7 @@ pub const Object = struct {
 
 [(Source)](https://github.com/lupyuen/zig-lvgl-nuttx/blob/main/lvgl.zig#L36-L58)
 
-TODO
+`Label` is a Zig Struct that wraps around an LVGL Label...
 
 ```zig
 /// LVGL Label
@@ -875,11 +877,11 @@ pub const Label = struct {
 
 [(Source)](https://github.com/lupyuen/zig-lvgl-nuttx/blob/main/lvgl.zig#L60-L101)
 
-TODO
+Let's call the wrapped LVGL API...
 
 # After Wrapping LVGL API
 
-TODO
+With the wrapped LVGL API, our Zig App becomes simpler and safer...
 
 ```zig
 /// Create the LVGL Widgets that will be rendered on the display. Based on
