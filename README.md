@@ -539,59 +539,76 @@ pub export fn lvgltest_main(
     _argv: [*]const [*]const u8
 ) c_int {
     debug("Zig LVGL Test", .{});
+    // Command-line args are not used
     _ = _argc;
     _ = _argv;
-    const disp_drv = c.get_disp_drv().?;
-    const disp_buf = c.get_disp_buf().?;
 
-    // LVGL initialization
+    // Init LVGL Library
     c.lv_init();
 
-    // Basic LVGL display driver initialization
+    // Init Display Buffer
+    const disp_buf = c.get_disp_buf().?;
     c.init_disp_buf(disp_buf);
-    c.init_disp_drv(disp_drv, disp_buf, monitor_cb);
 
-    // Display interface initialization
+    // Init Display Driver
+    const disp_drv = c.get_disp_drv().?;
+    c.init_disp_drv(disp_drv, disp_buf, monitorCallback);
+
+    // Init LCD Driver
     if (c.lcddev_init(disp_drv) != c.EXIT_SUCCESS) {
-        // Failed to use lcd driver falling back to framebuffer
+        // If failed, try Framebuffer Driver
         if (c.fbdev_init(disp_drv) != c.EXIT_SUCCESS) {
             // No possible drivers left, fail
             return c.EXIT_FAILURE;
         }
     }
+
+    // Register Display Driver
     _ = c.lv_disp_drv_register(disp_drv);
 
-    // Touchpad Initialization
+    // Init Touch Panel
     _ = c.tp_init();
-    const indev_drv = c.get_indev_drv().?;
 
-    // tp_read will be called periodically (by the library) to get the
-    // mouse position and state
+    // Init Input Device. tp_read will be called periodically
+    // to get the touched position and state
+    const indev_drv = c.get_indev_drv().?;
     c.init_indev_drv(indev_drv, c.tp_read);
 
     // Create the widgets for display
-    create_widgets();
+    createWidgetsUnwrapped()
+        catch |e| {
+            // In case of error, quit
+            std.log.err("createWidgets failed: {}", .{e});
+            return c.EXIT_FAILURE;
+        };
 
-    // Start TP calibration
+    // To call the LVGL API that's wrapped in Zig, change
+    // `createWidgetsUnwrapped` above to `createWidgetsWrapped`
+
+    // Start Touch Panel calibration
     c.tp_cal_create();
 
-    // Handle LVGL tasks
+    // Loop forever handing LVGL tasks
     while (true) {
+        // Handle LVGL tasks
         _ = c.lv_task_handler();
+
+        // Sleep a while
         _ = c.usleep(10000);
     }
     return 0;
 }
 ```
 
-[(Source)](https://github.com/lupyuen/zig-lvgl-nuttx/blob/0f55b49888e26dc168147be13c36a5149e58787f/lvgltest.zig#L41-L90)
+[(Source)](https://github.com/lupyuen/zig-lvgl-nuttx/blob/main/lvgltest.zig#L44-L109)
 
-And here's our `create_widgets` function that creates widgets...
+And here's our `createWidgetsUnwrapped` function that creates widgets...
 
 ```zig
-/// Create the LVGL Widgets that will be rendered on the display. Based on
+/// Create the LVGL Widgets that will be rendered on the display. Calls the
+/// LVGL API directly, without wrapping in Zig. Based on
 /// https://docs.lvgl.io/7.11/widgets/label.html#label-recoloring-and-scrolling
-fn create_widgets() void {
+fn createWidgetsUnwrapped() !void {
 
     // Get the Active Screen
     const screen = c.lv_scr_act().?;
@@ -624,7 +641,7 @@ fn create_widgets() void {
 }
 ```
 
-[(Source)](https://github.com/lupyuen/zig-lvgl-nuttx/blob/0f55b49888e26dc168147be13c36a5149e58787f/lvgltest.zig#L92-L124)
+[(Source)](https://github.com/lupyuen/zig-lvgl-nuttx/blob/main/lvgltest.zig#L114-L147)
 
 The Zig Functions look very similar to C: [lvgltest.c](https://github.com/lupyuen/lvgltest-nuttx/blob/main/lvgltest.c#L107-L318)
 
@@ -777,14 +794,14 @@ pub fn getActiveScreen() !Object {
     // Get the Active Screen
     const screen = c.lv_scr_act();
 
-    // Check the result
-    if (screen == null) {
+    // If successfully fetched...
+    if (screen) |s| {
+        // Wrap Active Screen as Object and return it
+        return Object.init(s);
+    } else {
         // Unable to get Active Screen
         std.log.err("lv_scr_act failed", .{});
         return LvglError.UnknownError;
-    } else {
-        // Wrap Active Screen as Object and return it
-        return Object.init(screen.?);
     }
 }
 ```
@@ -807,20 +824,21 @@ pub const Object = struct {
 
     /// Create a Label as a child of the Object
     pub fn createLabel(self: *Object) !Label {
-        // Assume that we won't copy from another Object 
+
+        // Assume we won't copy from another Object 
         const copy: ?*const c.lv_obj_t = null;
 
         // Create the Label
         const label = c.lv_label_create(self.obj, copy);
 
-        // Check the result
-        if (label == null) {
+        // If successfully created...
+        if (label) |l| {
+            // Wrap as Label and return it
+            return Label.init(l);
+        } else {
             // Unable to create Label
             std.log.err("lv_label_create failed", .{});
             return LvglError.UnknownError;
-        } else {
-            // Wrap as Label and return it
-            return Label.init(label.?);
         }
     }
 };
@@ -884,9 +902,10 @@ Let's call the wrapped LVGL API...
 With the wrapped LVGL API, our Zig App becomes simpler and safer...
 
 ```zig
-/// Create the LVGL Widgets that will be rendered on the display. Based on
+/// Create the LVGL Widgets that will be rendered on the display. Calls the
+/// LVGL API that has been wrapped in Zig. Based on
 /// https://docs.lvgl.io/7.11/widgets/label.html#label-recoloring-and-scrolling
-fn createWidgets() !void {
+fn createWidgetsWrapped() !void {
 
     // Get the Active Screen
     var screen = try lvgl.getActiveScreen();
@@ -918,7 +937,7 @@ fn createWidgets() !void {
 }
 ```
 
-[(Source)](https://github.com/lupyuen/zig-lvgl-nuttx/blob/9e0722f8236ac28a5850fa0d407268b3537efdac/lvgltest.zig#L100-L135)
+[(Source)](https://github.com/lupyuen/zig-lvgl-nuttx/blob/main/lvgltest.zig#L149-L181)
 
 _Can we auto-generate the Wrapper Code?_
 
