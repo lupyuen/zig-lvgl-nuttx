@@ -910,3 +910,5 @@ fn createWidgets() !void {
 ```
 
 [(Source)](https://github.com/lupyuen/zig-lvgl-nuttx/blob/9e0722f8236ac28a5850fa0d407268b3537efdac/lvgltest.zig#L100-L135)
+
+TODO: [Python Bindings for LVGL](https://github.com/lvgl/lv_binding_micropython)
