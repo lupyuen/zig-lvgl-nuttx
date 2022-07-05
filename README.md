@@ -941,7 +941,7 @@ fn createWidgetsWrapped() !void {
 
 _Can we auto-generate the Wrapper Code?_
 
-TODO: Maybe with Zig Reflection
+Maybe with Zig Reflection?
 
 https://github.com/lupyuen/zig-bl602-nuttx/blob/main/README.md#zig-type-reflection
 
