@@ -1064,3 +1064,5 @@ TODO: LVGL is object-oriented, might be tricky to wrap. See [Python Bindings for
 TODO: Maybe use Zig Interfaces?
 
 https://zig.news/david_vanderson/interfaces-in-zig-o1c
+
+https://github.com/alexnask/interface.zig
