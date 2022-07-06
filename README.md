@@ -1069,9 +1069,9 @@ All LVGL Widgets (Labels, Buttons, etc) have the same Base Type: `lv_obj_t`. But
 
 -   `lv_obj_set_width` works for any Widget
 
-Creating an Object-Oriented Zig Wrapper for LVGL might be challenging.
+Creating an Object-Oriented Zig Wrapper for LVGL might be challenging: Our Zig Wrapper needs to support `setWidth` for all LVGL Widgets.
 
-We might have to use Zig Interfaces and `@fieldParentPtr`...
+To do this we might use Zig Interfaces and `@fieldParentPtr`...
 
 -   ["Interfaces in Zig"](https://zig.news/david_vanderson/interfaces-in-zig-o1c)
 
@@ -1080,3 +1080,5 @@ _Are there any Object-Oriented Bindings for LVGL?_
 The official Python Bindings for LVGL appear to be Object-Oriented. This could inspire our Object-Oriented Wrapper in Zig...
 
 -   [Python Bindings for LVGL](https://github.com/lvgl/lv_binding_micropython)
+
+However the Python Bindings are Dynamically Typed, might be tricky implementing them as Static Types in Zig.
