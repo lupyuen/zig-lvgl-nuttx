@@ -1059,10 +1059,24 @@ We don't have the Parameter Names though, we might need to parse the `.cimport` 
 
 # Object-Oriented Wrapper for LVGL
 
-TODO: LVGL is object-oriented, might be tricky to wrap. See [Python Bindings for LVGL](https://github.com/lvgl/lv_binding_micropython)
+_Is LVGL really Object-Oriented?_
 
-TODO: Maybe use Zig Interfaces?
+Yep the LVGL API is actually Object-Oriented since it uses Inheritance.
 
-https://zig.news/david_vanderson/interfaces-in-zig-o1c
+All LVGL Widgets (Labels, Buttons, etc) have the same Base Type: `lv_obj_t`. But same LVGL Functions will work only for specific Widgets, some will work only on any Widget...
 
-https://github.com/alexnask/interface.zig
+-   `lv_label_set_text` works only for Labels
+
+-   `lv_obj_set_width` works for any Widget
+
+Creating an Object-Oriented Zig Wrapper for LVGL might be challenging.
+
+We might have to use Zig Interfaces and `@fieldParentPtr`...
+
+-   ["Interfaces in Zig"](https://zig.news/david_vanderson/interfaces-in-zig-o1c)
+
+_Are there any Object-Oriented Bindings for LVGL?_
+
+The official Python Bindings for LVGL appear to be Object-Oriented. This could inspire our Object-Oriented Wrapper in Zig...
+
+-   [Python Bindings for LVGL](https://github.com/lvgl/lv_binding_micropython)
