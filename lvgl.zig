@@ -48,7 +48,7 @@ pub const Object = struct {
 
     /// Init the Object
     pub fn init(obj: *c.lv_obj_t) Object {
-        return Object{ .obj = obj };
+        return .{ .obj = obj };
     }
 
     /// Create a Label as a child of the Object
@@ -80,7 +80,7 @@ pub const Label = struct {
 
     /// Init the Label
     pub fn init(obj: *c.lv_obj_t) Label {
-        return Label{ .obj = obj };
+        return .{ .obj = obj };
     }
 
     /// Set the wrapping of long lines in the label text
