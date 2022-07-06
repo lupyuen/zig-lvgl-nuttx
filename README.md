@@ -1045,7 +1045,7 @@ We don't have the Parameter Names though, we might need to parse the `.cimport` 
 
 [(Nore about jq)](https://stedolan.github.io/jq/manual/)
 
-# LVGL is Object-Oriented
+# Object-Oriented Wrapper for LVGL
 
 TODO: LVGL is object-oriented, might be tricky to wrap. See [Python Bindings for LVGL](https://github.com/lvgl/lv_binding_micropython)
 
