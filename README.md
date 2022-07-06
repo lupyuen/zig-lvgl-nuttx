@@ -508,7 +508,7 @@ cd $HOME/nuttx/nuttx
 make
 ```
 
-When tested on PineDio Stack BL604, our Zig LVGL App correctly renders the screen and correctly handles touch input. Yay!
+When tested on PineDio Stack BL604, our Zig LVGL App correctly renders the screen and correctly handles touch input (pic below). Yay!
 
 ```text
 NuttShell (NSH) NuttX-10.3.0
@@ -532,6 +532,8 @@ invert x/y:1, x:0, y:1
 ```
 
 [(Source)](https://gist.github.com/lupyuen/795d7660679c3e0288e8fe5bec190890)
+
+![LVGL Test App in C](https://lupyuen.github.io/images/lvgl-title.jpg)
 
 # Clean Up
 
