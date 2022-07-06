@@ -1022,7 +1022,7 @@ $ jq '.types[148]' lvgltest-analysis.json
 }
 ```
 
-The first parameter has type 79, so we look up `lvgltest-analysis.json` and follow the trail...
+The First Parameter has type 79, so we look up `lvgltest-analysis.json` and follow the trail...
 
 ```bash
 $ jq '.types[79]' lvgltest-analysis.json
@@ -1047,11 +1047,15 @@ $ jq '.types[137]' lvgltest-analysis.json
 ## Kind 20 is `struct`???
 ```
 
-Which gives us `?*.cimport:10:11.struct__lv_obj_t`.
+Which gives us the complete type of the First Parameter...
+
+```zig
+?*.cimport:10:11.struct__lv_obj_t
+```
 
 We don't have the Parameter Names though, we might need to parse the `.cimport` file.
 
-[(Nore about jq)](https://stedolan.github.io/jq/manual/)
+[(More about jq)](https://stedolan.github.io/jq/manual/)
 
 # Object-Oriented Wrapper for LVGL
 
