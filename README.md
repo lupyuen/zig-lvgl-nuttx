@@ -947,6 +947,8 @@ fn createWidgetsWrapped() !void {
 
 [(Source)](https://github.com/lupyuen/zig-lvgl-nuttx/blob/main/lvgltest.zig#L149-L181)
 
+(TODO: Convert `LV_LABEL_LONG_BREAK`, `LV_LABEL_ALIGN_CENTER` and other constants to Enums)
+
 Let's talk about creating the Zig Wrapper...
 
 # Auto-Generate Zig Wrapper
