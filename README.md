@@ -1,8 +1,14 @@
-![LVGL Test App in C](https://lupyuen.github.io/images/pinedio2-title.jpg)
+![LVGL Test App in C](https://lupyuen.github.io/images/lvgl-title.jpg)
 
 # Zig LVGL Touchscreen App on Apache NuttX RTOS
 
+[__Follow the updates on Twitter__](https://twitter.com/MisterTechBlog/status/1543395925116088320)
+
 Can we use Zig to clean up an LVGL Touchscreen App for Apache NuttX RTOS?
+
+Will Bit Fields in C Structs hinder this?
+
+Can we wrap the LVGL API to build simpler, safer LVGL Apps in Zig?
 
 Let's find out!
 
