@@ -1079,6 +1079,10 @@ To do this we might use Zig Interfaces and `@fieldParentPtr`...
 
 -   ["Zig Interfaces for the Uninitiated"](https://www.nmichaels.org/zig/interfaces.html)
 
+Which look somewhat similar to VTables in C++...
+
+-   ["Allocgate is coming in Zig 0.9"](https://pithlessly.github.io/allocgate.html)
+
 _Are there any Object-Oriented Bindings for LVGL?_
 
 The official Python Bindings for LVGL appear to be Object-Oriented. This could inspire our Object-Oriented Wrapper in Zig...
