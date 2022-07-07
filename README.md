@@ -1077,6 +1077,8 @@ To do this we might use Zig Interfaces and `@fieldParentPtr`...
 
 -   ["Interfaces in Zig"](https://zig.news/david_vanderson/interfaces-in-zig-o1c)
 
+-   ["Zig Interfaces for the Uninitiated"](https://www.nmichaels.org/zig/interfaces.html)
+
 _Are there any Object-Oriented Bindings for LVGL?_
 
 The official Python Bindings for LVGL appear to be Object-Oriented. This could inspire our Object-Oriented Wrapper in Zig...
