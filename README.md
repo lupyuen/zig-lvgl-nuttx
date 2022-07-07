@@ -6,9 +6,9 @@
 
 Can we use Zig to clean up an LVGL Touchscreen App for Apache NuttX RTOS?
 
-Will Bit Fields in C Structs hinder this?
+Can we wrap the LVGL API in Zig to build simpler, safer LVGL Apps?
 
-Can we wrap the LVGL API to build simpler, safer LVGL Apps in Zig?
+Or will we be blocked by Bit Fields in C Structs?
 
 Let's find out!
 
