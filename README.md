@@ -770,7 +770,7 @@ var screen = lvgl.getActiveScreen();
 _ = screen;
 ```
 
-Zig Compiler stops with an error...
+Zig Compiler stops us with an error...
 
 ```text
 ./lvgltest.zig:109:9:
