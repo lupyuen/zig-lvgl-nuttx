@@ -1071,6 +1071,10 @@ All LVGL Widgets (Labels, Buttons, etc) have the same Base Type: `lv_obj_t`. But
 
 -   `lv_obj_set_width` works for any Widget
 
+The LVGL Docs also say that LVGL is Object-Oriented...
+
+-   ["Base object (lv_obj)"](https://docs.lvgl.io/latest/en/html/widgets/obj.html)
+
 Creating an Object-Oriented Zig Wrapper for LVGL might be challenging: Our Zig Wrapper needs to support `setWidth` for all LVGL Widgets.
 
 To do this we might use Zig Interfaces and `@fieldParentPtr`...
