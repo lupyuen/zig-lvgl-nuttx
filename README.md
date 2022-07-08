@@ -2,7 +2,9 @@
 
 # Zig LVGL Touchscreen App on Apache NuttX RTOS
 
-[__Follow the updates on Twitter__](https://twitter.com/MisterTechBlog/status/1543395925116088320)
+Read the article...
+
+-   ["Build an LVGL Touchscreen App with Zig"](https://lupyuen.github.io/articles/lvgl)
 
 Can we use Zig to code an LVGL Touchscreen App for Apache NuttX RTOS?
 
