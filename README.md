@@ -1096,3 +1096,7 @@ The official Python Bindings for LVGL appear to be Object-Oriented. This could i
 -   [Python Bindings for LVGL](https://github.com/lvgl/lv_binding_micropython)
 
 However the Python Bindings are Dynamically Typed, might be tricky implementing them as Static Types in Zig.
+
+The LVGL Wrapper in this article was inspired by the [zgt GUI Library](https://github.com/zenith391/zgt), which works with GTK, Win32 and WebAssembly...
+
+-   ["Build a PinePhone App with Zig and zgt"](https://lupyuen.github.io/articles/pinephone)
