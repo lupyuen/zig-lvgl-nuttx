@@ -1067,7 +1067,7 @@ _Is LVGL really Object-Oriented?_
 
 Yep the LVGL API is actually Object-Oriented since it uses Inheritance.
 
-All LVGL Widgets (Labels, Buttons, etc) have the same Base Type: `lv_obj_t`. But same LVGL Functions will work only for specific Widgets, some will work only on any Widget...
+All LVGL Widgets (Labels, Buttons, etc) have the same Base Type: `lv_obj_t`. But some LVGL Functions will work only for specific Widgets, whereas some LVGL Functions will work only on any Widget...
 
 -   `lv_label_set_text` works only for Labels
 
