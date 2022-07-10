@@ -16,7 +16,7 @@ Let's find out!
 
 # LVGL Test App in C
 
-Here's our barebones LVGL App in C (pic above): [lvgltest_main.c](https://github.com/lupyuen/lvgltest-nuttx/blob/main/lvgltest.c#L107-L148) 
+Here's our barebones LVGL App in C (pic above): [lvgltest.c](https://github.com/lupyuen/lvgltest-nuttx/blob/main/lvgltest.c#L107-L148) 
 
 ```c
 static void create_widgets(void) {
@@ -100,7 +100,7 @@ Let's convert the LVGL Test App from C to Zig...
 
 The Zig Compiler can auto-translate C code to Zig. [(See this)](https://ziglang.org/documentation/master/#C-Translation-CLI)
 
-Here's how we auto-translate our LVGL App [lvgltest_main.c](https://github.com/lupyuen/lvgltest-nuttx/blob/main/lvgltest.c) from C to Zig...
+Here's how we auto-translate our LVGL App [lvgltest.c](https://github.com/lupyuen/lvgltest-nuttx/blob/main/lvgltest.c) from C to Zig...
 
 -   Take the GCC command from above
 
@@ -179,7 +179,7 @@ static void monitor_cb(lv_disp_drv_t * disp_drv, uint32_t time, uint32_t px)
 
 [(See the changes)](https://github.com/lupyuen/lvgltest-nuttx/commit/1e8b0501c800209f0fa3f35f54b3742498d0e302)
 
-Here's the original C code: [lvgltest_main.c](https://github.com/lupyuen/lvgltest-nuttx/blob/main/lvgltest.c)
+Here's the original C code: [lvgltest.c](https://github.com/lupyuen/lvgltest-nuttx/blob/main/lvgltest.c)
 
 And the auto-translation from C to Zig: [translated/lvgltest.zig](translated/lvgltest.zig)
 
